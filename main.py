@@ -14,8 +14,8 @@ velmax=80
 
 while t<t_max:
     if decision(p_entrar):
-        vel_entrada = np.random.uniform(55,75,1).item()
-        acl_entrada = np.random.uniform(0,10,1).item()
+        vel_entrada = np.random.uniform(55,75,1).item() # o de 60 70
+        acl_entrada = 1
         new_auto = Auto(vel_entrada,acl_entrada,velmax)
         Gral_Paz.append(Auto=new_auto)
     Gral_Paz.analisis()
