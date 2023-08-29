@@ -8,8 +8,8 @@ class Auto:
         self.nextacl=0
         self.nextpos=0
     def decision(self):
-        self.nextpos= self.pos + (self.vel)*1 + (self.acl)/2 
-        self.nextvel #A definir
+        self.nextpos= self.pos + (self.vel)*1  
+        self.nextvel= self.vel + (self.acl)*1
         self.nextacl #A definir esto es la decision que hay que tomar (Cuanto acelero o desacelero)
         pass
 
