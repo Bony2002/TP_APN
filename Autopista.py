@@ -11,8 +11,9 @@ class Autopista:
             self.primero = nuevo_auto
             self.ultimo = nuevo_auto
         else:
-            nuevo_auto.prev = self.ultimo
-            self.ultimo.prox = nuevo_auto
+            nuevo_auto.gap=self.ultimo.pos - nuevo_auto.pos - 4
+            nuevo_auto.adelante = self.ultimo
+            self.ultimo.atras = nuevo_auto
             self.ultimo = nuevo_auto
     
     def prepend(self, Auto):
@@ -22,20 +23,21 @@ class Autopista:
             self.ultimo = nuevo_auto
         else:
             nuevo_auto.next = self.primero
-            self.primero.prev = nuevo_auto
+            self.primero.adelante = nuevo_auto
             self.primero = nuevo_auto
     def analisis(self):
-        actual=self.ultimo
-        while actual.prox() != None:
+        if self.ultimo!=None:
+            actual=self.ultimo
+            while actual.adelante != None:
+                actual.decision()
+                actual=actual.adelante 
             actual.decision()
-            actual=actual.prox()    
-        actual.decision()
 
     def actualizacion(self):
         actual=self.ultimo
-        while actual.prox() != None:
+        while actual.adelante != None:
             actual.update()
-            actual=actual.prox()    
+            actual=actual.adelante    
         actual.update()
 
     def display(self):
