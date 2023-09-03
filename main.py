@@ -8,7 +8,7 @@ def decision(probabilidad) :
     return random.random() < probabilidad
 
 t=0
-t_max=120
+t_max=20
 p_entrar=0
 Gral_Paz=Autopista()
 velmax=23
@@ -19,8 +19,8 @@ new_auto = Auto(vel_entrada,acl_entrada,None,None,velmax,2)
 Gral_Paz.append(Auto=new_auto)
 Gral_Paz.analisis()
 Gral_Paz.actualizacion()
-# Gral_Paz.analisis()
-# Gral_Paz.actualizacion()
+Gral_Paz.analisis()
+Gral_Paz.actualizacion()
 # Gral_Paz.analisis()
 # Gral_Paz.actualizacion()
 # Gral_Paz.analisis()
@@ -37,6 +37,8 @@ while t<t_max:
     #     Gral_Paz.append(new_auto)
     #     cars.append(new_auto)
 
+    print(Gral_Paz.primero.vel, Gral_Paz.ultimo.vel)
+    print(t)
     print(Gral_Paz.primero.acl, Gral_Paz.ultimo.acl)
     Gral_Paz.analisis()
     Gral_Paz.actualizacion()
