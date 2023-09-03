@@ -8,26 +8,25 @@ def decision(probabilidad) :
     return random.random() < probabilidad
 
 t=0
-t_max=20
+t_max=100
 p_entrar=0
 Gral_Paz=Autopista()
 velmax=23
-cars = []
+
+
 vel_entrada = 20 #np.random.uniform(15.2778,20.833,1).item() # o de 60 70
 acl_entrada = 0
-new_auto = Auto(vel_entrada,acl_entrada,None,None,velmax,2)
-Gral_Paz.append(Auto=new_auto)
-Gral_Paz.analisis()
-Gral_Paz.actualizacion()
-Gral_Paz.analisis()
-Gral_Paz.actualizacion()
-# Gral_Paz.analisis()
-# Gral_Paz.actualizacion()
-# Gral_Paz.analisis()
-# Gral_Paz.actualizacion()
+new_auto = Auto(vel_entrada,acl_entrada,None,None,velmax,2,1000)
+Gral_Paz.append(new_auto)
+
 vel_entrada = 20 #np.random.uniform(15.2778,20.833,1).item() # o de 60 70
-new_auto2 = Auto(vel_entrada,acl_entrada,None,None,velmax,2)
-Gral_Paz.append(Auto=new_auto2)
+new_auto2 = Auto(vel_entrada,acl_entrada,None,None,velmax,2,800)
+Gral_Paz.append(new_auto2)
+
+vel_entrada = 20 #np.random.uniform(15.2778,20.833,1).item() # o de 60 70
+new_auto3 = Auto(vel_entrada,acl_entrada,None,None,velmax,2,400)
+Gral_Paz.append(new_auto3)
+
 
 while t<t_max:
     # if decision(1):
@@ -37,9 +36,10 @@ while t<t_max:
     #     Gral_Paz.append(new_auto)
     #     cars.append(new_auto)
 
-    print(Gral_Paz.primero.vel, Gral_Paz.ultimo.vel)
     print(t)
-    print(Gral_Paz.primero.acl, Gral_Paz.ultimo.acl)
+    print(Gral_Paz.primero.atras.vel, Gral_Paz.ultimo.vel)
+    print(Gral_Paz.primero.atras.acl, Gral_Paz.ultimo.acl)
+    print(Gral_Paz.primero.atras.pos, Gral_Paz.ultimo.pos)
     Gral_Paz.analisis()
     Gral_Paz.actualizacion()
     t+=1
