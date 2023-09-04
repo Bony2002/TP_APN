@@ -35,7 +35,7 @@ class Auto:
             self.gap=self.adelante.pos - self.pos - 4
             self.desiredst= self.mindst + max(0, (self.vel*self.thw + (self.vel-self.adelante.vel)/2*(self.maxacl*self.minacl)**0.5))
         if self.distraction==False:
-            self.nextacl= max(-5,self.maxacl*(1-(self.vel/self.velmax)**gamma - (self.desiredst/(self.gap))**2))
+            self.nextacl= max(-4,min(4,self.maxacl*(1-(self.vel/self.velmax)**gamma - (self.desiredst/(self.gap))**2)))
             self.nextpos= self.pos + self.vel*self.dt 
             self.nextvel= max(0, self.vel + (self.acl)*self.dt)
 
