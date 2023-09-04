@@ -1,30 +1,34 @@
 class Auto:
     def __init__(self,velocity,acceleration,adelante,atras,max_velocity,min_distance,position):
-        self.thw=2
-        self.dt=0.25
 
-        self.maxacl=1
-        self.atras=atras
-        self.adelante=adelante
-        self.pos=position
+        self.id = 0        
 
+        self.pos=position # Cuado hagamos dos carriles debería ser una tupla
         self.vel=velocity
         self.acl=acceleration
+        self.gap=1000
+
+        self.atras=atras #Vehiculo que se ecuentra detras de self
+        self.adelante=adelante #Vehiculo que se encuentra adelante de self
         
-        self.mindst=min_distance
+        self.thw=2 # Time Headway: El gap de tiempo entre que el frente de un vehículo pase por 
+                   # un punto y el frente del vehículo que lo sigue pase por el mismo punto 
+        self.dt=0.5 # Delta Time : Lapso de tiempo que se entá teniendo en cuenta durante la simulación
 
-        self.velmax=max_velocity
+        self.maxacl=1 # La máxima aceleración a la que desearía ir una persona cuando la ruta delante 
+                      # de él está vacía y aún no alcanzó la velocidad máxima
+        self.mindst=min_distance # La mínima distancia medida en metros que deben tener dos vehículos entre si
+        self.velmax=max_velocity # La velocidad máxima de la autopista/de la persona
+        self.desiredst=0
+        self.minacl=3
+        self.distraction=False # Probabilidad de distracción
 
+        # Valores de la velocidad, aceleración y posición que se calcula para alcanzar en el sigueinte momento
         self.nextvel=0
         self.nextacl=0
         self.nextpos=0
-
-        self.distraction=False
-
-        self.desiredst=0
-        self.newgap=0
-        self.gap=1000
-        self.minacl=3
+        self.newgap=0 ## Fijarse por qué esto no se utiliza
+        
     def decision(self):
         gamma=4
         if self.adelante!=None:
