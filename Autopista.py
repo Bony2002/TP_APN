@@ -1,12 +1,14 @@
 from Auto import Auto
-
+import numpy as np
 class Autopista:
     def __init__(self):
         self.primero = None
         self.ultimo = None
+        self.cant_autos=0
     
     def append(self, Auto):
         nuevo_auto = Auto
+        self.cant_autos+=1
         if not self.primero:
             self.primero = nuevo_auto
             self.ultimo = nuevo_auto
@@ -17,6 +19,7 @@ class Autopista:
             self.ultimo = nuevo_auto
     
     def prepend(self, Auto):
+        self.cant_autos+=1
         nuevo_auto = Auto
         if not self.primero:
             self.primero = nuevo_auto
@@ -39,10 +42,17 @@ class Autopista:
             actual.update()
             actual=actual.adelante    
         actual.update()
+    def revision(self,t):
+        pass
 
-    def display(self):
-        current = self.primero
-        while current:
-            print(current.data, end=" <-> ")
-            current = current.next
-        print("None")
+    def resumen(self):
+        actual=self.ultimo
+        resumen=np.zeros(shape=[self.cant_autos,4])
+        i=0
+        while actual.adelante!=None:
+            resumen[i]=[actual.id,actual.pos,actual.vel,actual.acl]
+            actual=actual.adelante
+            i+=1
+        resumen[i]=[actual.id,actual.pos,actual.vel,actual.acl]
+        return resumen
+
