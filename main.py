@@ -42,6 +42,7 @@ while t<t_max:
     Gral_Paz.actualizacion()
     t+=1
 print(Gral_Paz.primero.pos)
+print(Gral_Paz.primero.vel)
 def plot_cars(cars):
     plt.clf()
     plt.xlim(0, 25)  # Adjust the x-axis limits as needed
