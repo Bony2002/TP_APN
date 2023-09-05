@@ -1,7 +1,7 @@
 class Auto:
     def __init__(self,velocity,acceleration,adelante,atras,max_velocity,min_distance,position):
 
-        self.id = 0        
+        self.id = 0      
 
         self.pos=position # Cuado hagamos dos carriles debería ser una tupla
         self.vel=velocity
@@ -15,8 +15,8 @@ class Auto:
                    # un punto y el frente del vehículo que lo sigue pase por el mismo punto 
         self.dt=0.5 # Delta Time : Lapso de tiempo que se entá teniendo en cuenta durante la simulación
 
-        self.maxacl=1 # La máxima aceleración a la que desearía ir una persona cuando la ruta delante 
-                      # de él está vacía y aún no alcanzó la velocidad máxima
+        self.maxacl=3.5# La máxima aceleración y desaceleracion posible para un auto
+            
         self.mindst=min_distance # La mínima distancia medida en metros que deben tener dos vehículos entre si
         self.velmax=max_velocity # La velocidad máxima de la autopista/de la persona
         self.desiredst=0
@@ -35,7 +35,7 @@ class Auto:
             self.gap=self.adelante.pos - self.pos - 4
             self.desiredst= self.mindst + max(0, (self.vel*self.thw + (self.vel-self.adelante.vel)/2*(self.maxacl*self.minacl)**0.5))
         if self.distraction==False:
-            self.nextacl= max(-4,min(4,self.maxacl*(1-(self.vel/self.velmax)**gamma - (self.desiredst/(self.gap))**2)))
+            self.nextacl= max(-self.maxacl,min(self.maxacl,1*(1-(self.vel/self.velmax)**gamma - (self.desiredst/(self.gap))**2)))
             self.nextpos= self.pos + self.vel*self.dt 
             self.nextvel= max(0, self.vel + (self.acl)*self.dt)
 

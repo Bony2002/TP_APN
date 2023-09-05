@@ -1,0 +1,1 @@
+ print(Gral_Paz.primero.atras.pos, Gral_Paz.ultimo.pos)
