@@ -18,16 +18,7 @@ class Autopista:
             self.ultimo.atras = nuevo_auto
             self.ultimo = nuevo_auto
     
-    def prepend(self, Auto):
-        self.cant_autos+=1
-        nuevo_auto = Auto
-        if not self.primero:
-            self.primero = nuevo_auto
-            self.ultimo = nuevo_auto
-        else:
-            nuevo_auto.next = self.primero
-            self.primero.adelante = nuevo_auto
-            self.primero = nuevo_auto
+    
     def analisis(self):
         if self.ultimo!=None:
             actual=self.ultimo
@@ -35,6 +26,18 @@ class Autopista:
                 actual.decision()
                 actual=actual.adelante 
             actual.decision()
+
+    def eliminar(self,id):
+        fin=False
+        actual=self.ultimo
+        while actual!=None and fin==False:
+            if actual.id == id:
+                fin=True
+                if actual.atras!=None:
+                   actual.atras.adelante = actual.adelante
+                if actual.adelante!=None:
+                    actual.adelante.atras = actual.atras
+            actual=actual.adelante
 
     def actualizacion(self):
         actual=self.ultimo

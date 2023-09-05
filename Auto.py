@@ -1,11 +1,15 @@
 import numpy as np
+import Autopista
 class Auto:
     def __init__(self,velocity,acceleration,adelante,atras,max_velocity,responsable,id):
 
         self.id=id
 
+        self.choque=0
+        self.cooldownchoque=0
+
         if responsable==True:
-            self.druido=0.25
+            self.druido=0.125
             self.exp=1
             self.thw=2 # Time Headway: El gap de tiempo entre que el frente de un vehículo pase por un punto y el frente del vehículo que lo sigue pase por el mismo punto 
             self.mindst=5 # La mínima distancia medida en metros que deben tener dos vehículos entre si
@@ -49,7 +53,7 @@ class Auto:
             self.desiredst= self.mindst + max(0, (self.vel*self.thw + (self.vel-self.adelante.vel)/2*(self.maxacl*self.minacl)**0.5))
         if self.distraction==False:
             self.nextacl= max(-self.maxacl,min(self.maxacl,1*(1-(self.vel/self.velmax)**gamma - (self.desiredst/(self.gap))**2 )))
-            self.nextpos= self.pos + self.vel*self.dt 
+            self.nextpos= self.pos + self.vel*self.dt +1/2*self.acl*self.dt**2
             self.nextvel= max(0, self.vel + (self.acl)*self.dt)
 
     def update(self):
@@ -58,6 +62,22 @@ class Auto:
         self.vel=self.nextvel
         
 
-    def revision():
-        #No se si se hace aca o lo hacemos en la lista en general.
-        pass
+    def revision(self,Autopista):
+        if self.adelante!=None:
+            if self.cooldownchoque==10:
+                Autopista.eliminar(self.adelante.id)
+                Autopista.eliminar(self.id)
+                self.choque=0
+            elif self.pos - self.pos.adelante < 4  and self.choque==0:
+                self.choque=1
+                self.adelante.choque=1
+                self.vel=0
+                self.acl=0
+                self.adelante.vel=0
+                self.adelante.acl=0
+            elif self.choque==1:
+                self.cooldownchoque+=1
+
+
+        
+        
