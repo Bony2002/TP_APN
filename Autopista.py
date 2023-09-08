@@ -44,12 +44,15 @@ class Autopista:
             actual=actual.adelante
 
     def actualizacion(self):
+        positions = []
         if self.ultimo!=None:
             actual=self.ultimo
             while actual.adelante != None:
                 actual.update()
+                positions.append(actual.pos)
                 actual=actual.adelante    
             actual.update()
+        return positions
 
     def revision(self):
         if self.ultimo!=None:

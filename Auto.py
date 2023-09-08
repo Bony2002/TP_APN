@@ -58,8 +58,14 @@ class Auto:
             if self.cooldownchoque == 10:
                 Autopista.eliminar(self.id)
                 self.choque = 0
-            elif self.gap < 4  and self.choque == 0:
+            elif self.adelante.pos - self.pos < 4  and self.choque == 0:
                 print("hay dos que chocaron")
+                print(self.id)
+                print(self.vel)
+                print(self.adelante.id)
+                print(self.adelante.vel)                
+                print("")
+
                 self.choque = 1
                 self.adelante.choque = 1
                 self.vel = 0

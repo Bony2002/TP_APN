@@ -4,13 +4,15 @@ import random
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
 
 def decision(probabilidad) :
     return random.random() < probabilidad
 
+fig, ax = plt.subplots()
 
 p_entrar=0.7
-t_max=200
+t_max=20
 cooldown=2
 id=0
 Gral_Paz=Autopista(23,24300,0)
@@ -19,20 +21,24 @@ for i in range(t_max):
     if cooldown>=5 and decision(p_entrar) :
         id+=1.0
         cooldown=-1
+        # if Gral_Paz.ultimo.vel < 15 and Gral_Paz.ultimo != None:
+        #     vel_entrada = np.random.uniform(Gral_Paz.ultimo.vel-3,Gral_Paz.ultimo.vel,1).item()
+        # else:
         vel_entrada = np.random.uniform(15.2778,20.833,1).item() # o de 60 70
         acl_entrada = 0
         new_auto = Auto(id,0,vel_entrada,acl_entrada,23,True)
-        Gral_Paz.append(new_auto)
-        if i == 1 :
-            resumen=pd.DataFrame(Gral_Paz.resumen())
-            resumen.to_csv('resumen.csv', index=False)            
+        Gral_Paz.append(new_auto)           
     cooldown+=1
     Gral_Paz.revision()
     Gral_Paz.analisis()
-    Gral_Paz.actualizacion()
+    positions = Gral_Paz.actualizacion()
 
-# resumen=pd.DataFrame(Gral_Paz.resumen())
-# resumen.to_csv('resumen.csv', index=False)
+    dots, = ax.plot(positions, np.ones(len(positions)), 'bo')
+
+ani = FuncAnimation(fig, dots, blit=True)
+plt.show()
+    
+
 
 #loaded_df = pd.read_csv('TP_APN/resumen.csv')
 
