@@ -29,13 +29,14 @@ def update(frame):
     if cooldown>=5 and decision(p_entrar):
         id+=1.0
         cooldown=-1
-        if Gral_Paz.ultimo != None and Gral_Paz.ultimo.vel < 15 and Gral_Paz.ultimo.pos < 100:
-            vel_entrada = np.random.uniform(Gral_Paz.ultimo.vel-3,Gral_Paz.ultimo.vel,1).item()
-        else:
-            vel_entrada = np.random.uniform(15.2778,20.833,1).item() # o de 60 70
-        acl_entrada = 0
-        new_auto = Auto(id,0,vel_entrada,acl_entrada,True)
-        Gral_Paz.append(new_auto)           
+        if (Gral_Paz.ultimo.pos > 10 if Gral_Paz.ultimo != None else True):
+            if Gral_Paz.ultimo != None and Gral_Paz.ultimo.vel < 15 and Gral_Paz.ultimo.pos < 100:
+                vel_entrada = np.random.uniform(Gral_Paz.ultimo.vel-3,Gral_Paz.ultimo.vel) # si la autopista está muy cargada es esta la uniforme
+            else:
+                vel_entrada = np.random.uniform(15.2778,20.833) # Esta es la uniform con la que arranca la velocidad normalmente un auto
+            acl_entrada = 0
+            new_auto = Auto(id,0,vel_entrada,acl_entrada,True)
+            Gral_Paz.append(new_auto)
     cooldown+=1
     Gral_Paz.revision()
     Gral_Paz.analisis()

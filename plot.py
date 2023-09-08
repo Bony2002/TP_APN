@@ -1,8 +1,7 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
+a=10
+b=20
 
+c=11
+d=12
 
-for _ in range(50):
-
-    print(proba)
+print(a<b if c==d else b<a)
