@@ -51,8 +51,13 @@ class Autopista:
                 actual=actual.adelante    
             actual.update()
 
-    def revision(self,t):
-        pass
+    def revision(self):
+        if self.ultimo!=None:
+            actual=self.ultimo
+            while actual.adelante != None:
+                actual.revision(self)
+                actual=actual.adelante    
+            actual.revision(self)
 
     def resumen(self):
         actual=self.ultimo

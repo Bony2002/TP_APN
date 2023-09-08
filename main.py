@@ -15,7 +15,7 @@ cooldown=2
 id=0
 Gral_Paz=Autopista(23,24300,0)
 
-for _ in range(t_max):
+for i in range(t_max):
     if cooldown>=5 and decision(p_entrar) :
         id+=1.0
         cooldown=-1
@@ -23,14 +23,16 @@ for _ in range(t_max):
         acl_entrada = 0
         new_auto = Auto(id,0,vel_entrada,acl_entrada,23,True)
         Gral_Paz.append(new_auto)
-
+        if i == 1 :
+            resumen=pd.DataFrame(Gral_Paz.resumen())
+            resumen.to_csv('resumen.csv', index=False)            
     cooldown+=1
     Gral_Paz.revision()
     Gral_Paz.analisis()
     Gral_Paz.actualizacion()
 
-resumen=pd.DataFrame(Gral_Paz.resumen())
-resumen.to_csv('resumen.csv', index=False)
+# resumen=pd.DataFrame(Gral_Paz.resumen())
+# resumen.to_csv('resumen.csv', index=False)
 
 #loaded_df = pd.read_csv('TP_APN/resumen.csv')
 

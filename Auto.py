@@ -55,18 +55,19 @@ class Auto:
         
     def revision(self,Autopista):
         if self.adelante!=None:
-            if self.cooldownchoque==10:
+            if self.cooldownchoque == 10:
                 Autopista.eliminar(self.id)
-                self.choque=0
-            elif self.pos - self.pos.adelante < 4  and self.choque==0:
-                self.choque=1
-                self.adelante.choque=1
-                self.vel=0
-                self.acl=0
-                self.adelante.vel=0
-                self.adelante.acl=0
-            elif self.choque==1:
-                self.cooldownchoque+=1
+                self.choque = 0
+            elif self.gap < 4  and self.choque == 0:
+                print("hay dos que chocaron")
+                self.choque = 1
+                self.adelante.choque = 1
+                self.vel = 0
+                self.acl = 0
+                self.adelante.vel = 0
+                self.adelante.acl = 0
+            elif self.choque == 1:
+                self.cooldownchoque += 1
 
 
     def decision(self):
@@ -74,8 +75,8 @@ class Auto:
         gamma=4
         if self.adelante != None:
             self.desiredst = self.mindst + max(0, (self.vel*self.thw + (self.vel-self.adelante.vel)/2*(self.max_acl*self.max_dacl)**0.5))
-        if self.distraction == False:
-            self.nextacl = max(-self.max_dacl,min(self.max_acl,self.max_acl*(1-(self.vel/self.velmax)**gamma - (self.desiredst/(self.gap))**2 + error )))
+        if self.distraction == False and self.choque != 1:
+            self.nextacl = max(-self.max_dacl,min(self.max_acl,self.max_acl*(1-(self.vel/self.velmax)**gamma - (self.desiredst/(self.gap))**2)))
             self.nextpos = self.pos + self.vel*self.dt +1/2*self.acl*self.dt**2
             self.nextvel = max(0, self.vel + (self.acl)*self.dt)
 
