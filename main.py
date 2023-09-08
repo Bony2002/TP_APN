@@ -25,6 +25,7 @@ for _ in range(t_max):
         Gral_Paz.append(new_auto)
 
     cooldown+=1
+    Gral_Paz.revision()
     Gral_Paz.analisis()
     Gral_Paz.actualizacion()
 
