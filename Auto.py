@@ -53,6 +53,22 @@ class Auto:
         self.nextpos=0
         self.newgap=0 ## Fijarse por qué esto no se utiliza
         
+    def revision(self,Autopista):
+        if self.adelante!=None:
+            if self.cooldownchoque==10:
+                Autopista.eliminar(self.id)
+                self.choque=0
+            elif self.pos - self.pos.adelante < 4  and self.choque==0:
+                self.choque=1
+                self.adelante.choque=1
+                self.vel=0
+                self.acl=0
+                self.adelante.vel=0
+                self.adelante.acl=0
+            elif self.choque==1:
+                self.cooldownchoque+=1
+
+
     def decision(self):
         error=np.random.normal(0,self.druido,1).item
         gamma=4
@@ -71,21 +87,6 @@ class Auto:
             self.gap = self.adelante.pos - self.pos - 4
 
         
-
-    def revision(self,Autopista):
-        if self.adelante!=None:
-            if self.cooldownchoque==10:
-                Autopista.eliminar(self.id)
-                self.choque=0
-            elif self.pos - self.pos.adelante < 4  and self.choque==0:
-                self.choque=1
-                self.adelante.choque=1
-                self.vel=0
-                self.acl=0
-                self.adelante.vel=0
-                self.adelante.acl=0
-            elif self.choque==1:
-                self.cooldownchoque+=1
 
 
         
