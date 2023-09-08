@@ -10,7 +10,7 @@ def decision(probabilidad) :
     return random.random() < probabilidad
 
 p_entrar=0.7
-t_max=20
+t_max=200
 cooldown=2
 id=0
 Gral_Paz=Autopista(23,24300,0)
@@ -35,10 +35,13 @@ fig, ax = plt.subplots()
 dots, = ax.plot([], [], 'bo')
 
 def initplot():
+    ax.set_xlim(0, t_max)
+    ax.set_ylim(0, 2)
     dots.set_data([], [])
     return dots,
 
 def update(frame):
+    global cooldown, id, p_entrar, Gral_Paz
     # Your existing code to update Gral_Paz and get positions
     if cooldown>=5 and decision(p_entrar) :
         id+=1.0
@@ -54,12 +57,12 @@ def update(frame):
     Gral_Paz.revision()
     Gral_Paz.analisis()
     positions = Gral_Paz.actualizacion()
-
-    # Update the dot data with the new positions
     dots.set_data(positions, np.ones(len(positions)))
+    dots.set_ydata(np.ones(len(positions)))
     return dots,
 
 ani = FuncAnimation(fig, update, init_func=initplot, frames=range(t_max), blit=True)
+#plt.pause(0.1)
 plt.show()
 
 #loaded_df = pd.read_csv('TP_APN/resumen.csv')
