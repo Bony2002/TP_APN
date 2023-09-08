@@ -2,69 +2,65 @@ import numpy as np
 import Autopista
 class Auto:
     def __init__(self,id,position,velocity,acceleration,responsable):
-
-        self.id = id # id del auto
-
-        self.autopista = None
-
-        self.pos = position # Posición del auto en la autopista (metros)
-        self.vel = velocity # Velocidad actual del auto (m/s)
-        self.acl = acceleration # Aceleración actual del auto (m/s**2)
-        self.gap = 1000 # Espacio entre el auto (self) y el auto que se encuentra adelante.
-                      #
-                      # Se setea en 1000 como una exageración de número grande para representar
-                      # al primer auto quien no tiene autos adelante
-
+        self.id = id # Id del auto
+        self.autopista = None # Autopista a la que pertenece
         self.adelante = None # Vehiculo que se encuentra adelante de self
         self.atras = None # Vehiculo que se ecuentra detras de self
-
-        self.responsabilidad = np.random.normal(1,0.2)
-        if (self.responsabilidad<0.625):
-            self.responsabilidad=0.625
-        if (self.responsabilidad>1.875):
-            self.responsabilidad=1.875
-
-
-        self.des_vel = 23*self.responsabilidad # La velocidad máxima de la persona
         self.max_acl = 3  # Máxima aceleración física posible para un auto
         self.max_dacl = 4   # La máxima desaceleración física posible para un auto
 
         self.dt = 0.5 # Delta Time : Lapso de tiempo que se está teniendo en cuenta durante la simulación
+        self.pos = position # Posición del auto en la autopista (metros)
+        self.vel = velocity # Velocidad actual del auto (m/s)
+        self.acl = acceleration # Aceleración actual del auto (m/s**2)
+        self.gap = 1000 # Espacio entre el auto (self) y el auto que se encuentra adelante.
+                        # Se setea en 1000 como una exageración de número grande para representar
+                        # al primer auto quien no tiene autos adelante
+        self.choque = 0   # Esta chocado si/no
+        self.cooldownchoque=0 # Timer para retirar el choque
 
 
-        self.choque=0
-        self.cooldownchoque=0
+        self.irresponsabilidad = np.random.normal(1,0.2) # Calculamos el % de irresponsabilidad
+        if (self.irresponsabilidad<0.625):
+            self.irresponsabilidad=0.625
+        if (self.irresponsabilidad>1.875):
+            self.irresponsabilidad=1.875
 
+        self.desiredvel = 23*self.irresponsabilidad # La velocidad máxima de la persona
 
-        # Se me ocurre que se puede plantear lo siguiente: el objetivo de cada persona es una escala donde se van a balancear dos aspectos:
-        # Llegar lo antes posible y de manera segura. Estos aspectos se van a medir en valores del [0:1] de manera que 
-        # el conductor óptimo va a querer tener "Llegar lo antes posible" en 1 y de mnaer segura en 1 pero puede ser que por ejemplo haya una persona
-        # que no le interese llegar de manera segura pero si lo antes posible, lo que haría que esta persoan vaya a una mayor velocidad de la permitida en la autopista
-        # La responsabilidad del conductor, su velocidad máxima y su aceleración dependen de estos valores
+        self.probadistraccion = max(0, (self.irresponsabilidad - 0.625)/(1.875-0.625)-0.1)
 
-        if responsable==True:
-            self.druido=0.1
-            self.exp=1
-            self.thw=2 # Time Headway: El gap de tiempo entre que el frente de un vehículo pase por un punto y el frente del vehículo que lo sigue pase por el mismo punto 
-            self.mindst=5 # La mínima distancia medida en metros que deben tener dos vehículos entre si
+        # PERSONALIDADES DE LOS CONDUCTORES
+            # CONSERVADOR
+        if self.irresponsabilidad < 0.8:
+            self.time_hdw = 2.5 # Time Headway: El gap de tiempo entre que el frente de un vehículo pase por un punto y el frente del vehículo que lo sigue pase por el mismo punto 
+            self.mindst = 7 # La mínima distancia medida en metros que deben tener dos vehículos entre si
+            #self.druido = 0.1
+            #self.exp = 1
+
+            # AGRESIVO
+        elif self.irresponsabilidad > 1.2:
+            self.time_hdw = 1.5
+            self.mindst = 2
+            #self.druido = 0.5
+            #self.exp = 3
+
+            # PROMEDIO
         else:
-            self.thw=1.5
-            self.druido=0.5
-            self.exp=3
-            self.mindst=2 # La mínima distancia medida en metros que deben tener dos vehículos entre si
-
-        self.desiredst=0
-        self.distraction=False # Probabilidad de distracción
+            self.time_hdw = 2
+            self.mindst = 5
+            #self.druido = 0.15
+            #self.exp = 2
 
         # Valores de la velocidad, aceleración y posición que se calcula para alcanzar en el siguiente momento
         self.nextvel=0
         self.nextacl=0
         self.nextpos=0
-        self.newgap=0 ## Fijarse por qué esto no se utiliza
-        
+        self.desiredst=0
+
     def revision(self,Autopista):
         if self.adelante!=None:
-            if self.cooldownchoque == 10:
+            if self.cooldownchoque == 15:
                 Autopista.eliminar(self.id)
                 self.choque = 0
             elif self.adelante.pos - self.pos < 4  and self.choque == 0:
@@ -86,14 +82,15 @@ class Auto:
 
 
     def decision(self):
-        error=np.random.normal(0,self.druido,1).item
+        #error=np.random.normal(0,self.druido)
         gamma=4
         if self.adelante != None:
-            self.desiredst = self.mindst + max(0, (self.vel*self.thw + (self.vel-self.adelante.vel)/2*(self.max_acl*self.max_dacl)**0.5))
-        if self.distraction == False and self.choque != 1:
-            self.nextacl = max(-self.max_dacl,min(self.max_acl,self.max_acl*(1-(self.vel/self.des_vel)**gamma - (self.desiredst/(self.gap))**2)))
+            self.desiredst = self.mindst + max(0, (self.vel*self.time_hdw + (self.vel-self.adelante.vel)/2*(self.max_acl*self.max_dacl)**0.5))
+        if self.choque != 1:
             self.nextpos = self.pos + self.vel*self.dt +1/2*self.acl*self.dt**2
             self.nextvel = max(0, self.vel + (self.acl)*self.dt)
+        if self.probadistraccion <  np.random.uniform(0,1):
+            self.nextacl = max(-self.max_dacl,min(self.max_acl,self.max_acl*(1-(self.vel/self.desiredvel)**gamma - (self.desiredst/(self.gap))**2)))
 
     def update(self):
         self.pos = self.nextpos
@@ -101,9 +98,3 @@ class Auto:
         self.vel = self.nextvel
         if self.adelante != None:
             self.gap = self.adelante.pos - self.pos - 4
-
-        
-
-
-        
-        
