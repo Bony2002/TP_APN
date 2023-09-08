@@ -9,6 +9,7 @@ class Autopista:
                                          # Hay que tener en cuenta el tramo que la maxima es 100km/h
         self.longitud = longitud # Longitud de la autopista (metros)
         self.cant_autos=0
+        self.p_entrar=0.6
     
     def append(self, Auto):
         nuevo_auto = Auto
@@ -72,4 +73,4 @@ class Autopista:
             i+=1
         resumen[i]=[actual.id,actual.pos,actual.vel,actual.acl]
         return resumen
-
+    
