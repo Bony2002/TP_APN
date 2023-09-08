@@ -14,6 +14,7 @@ class Autopista:
     def append(self, Auto):
         nuevo_auto = Auto
         self.cant_autos+=1
+        nuevo_auto.autopista = self
         if not self.primero:
             self.primero = nuevo_auto
             self.ultimo = nuevo_auto

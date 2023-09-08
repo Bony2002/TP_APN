@@ -1,9 +1,11 @@
 import numpy as np
 import Autopista
 class Auto:
-    def __init__(self,id,position,velocity,acceleration,max_velocity,responsable):
+    def __init__(self,id,position,velocity,acceleration,responsable):
 
         self.id = id # id del auto
+
+        self.autopista = None
 
         self.pos = position # Posición del auto en la autopista (metros)
         self.vel = velocity # Velocidad actual del auto (m/s)
@@ -16,6 +18,14 @@ class Auto:
         self.adelante = None # Vehiculo que se encuentra adelante de self
         self.atras = None # Vehiculo que se ecuentra detras de self
 
+        self.responsabilidad = np.random.normal(1,0.2)
+        if (self.responsabilidad<0.625):
+            self.responsabilidad=0.625
+        if (self.responsabilidad>1.875):
+            self.responsabilidad=1.875
+
+
+        self.des_vel = 23*self.responsabilidad # La velocidad máxima de la persona
         self.max_acl = 3  # Máxima aceleración física posible para un auto
         self.max_dacl = 4   # La máxima desaceleración física posible para un auto
 
@@ -43,7 +53,6 @@ class Auto:
             self.exp=3
             self.mindst=2 # La mínima distancia medida en metros que deben tener dos vehículos entre si
 
-        self.velmax=max_velocity # La velocidad máxima de la persona
         self.desiredst=0
         self.distraction=False # Probabilidad de distracción
 
@@ -82,7 +91,7 @@ class Auto:
         if self.adelante != None:
             self.desiredst = self.mindst + max(0, (self.vel*self.thw + (self.vel-self.adelante.vel)/2*(self.max_acl*self.max_dacl)**0.5))
         if self.distraction == False and self.choque != 1:
-            self.nextacl = max(-self.max_dacl,min(self.max_acl,self.max_acl*(1-(self.vel/self.velmax)**gamma - (self.desiredst/(self.gap))**2)))
+            self.nextacl = max(-self.max_dacl,min(self.max_acl,self.max_acl*(1-(self.vel/self.des_vel)**gamma - (self.desiredst/(self.gap))**2)))
             self.nextpos = self.pos + self.vel*self.dt +1/2*self.acl*self.dt**2
             self.nextvel = max(0, self.vel + (self.acl)*self.dt)
 
