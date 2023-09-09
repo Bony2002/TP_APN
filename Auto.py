@@ -1,8 +1,9 @@
 import numpy as np
 import Autopista
 class Auto:
-    def __init__(self,id,position,velocity,acceleration,responsable):
+    def __init__(self,id,position,velocity,acceleration,carril):
         self.id = id # Id del auto
+        self.carril = carril
         self.autopista = None # Autopista a la que pertenece
         self.adelante = None # Vehiculo que se encuentra adelante de self
         self.atras = None # Vehiculo que se ecuentra detras de self
@@ -28,7 +29,7 @@ class Auto:
 
         self.desiredvel = 23*self.irresponsabilidad # La velocidad máxima de la persona
 
-        self.probadistraccion = max(0, np.random.normal(0.4,0.05))
+        self.probadistraccion = max(0, np.random.normal(0.45,0.05))
 
         # PERSONALIDADES DE LOS CONDUCTORES
             # CONSERVADOR
