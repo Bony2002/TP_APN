@@ -28,7 +28,7 @@ class Auto:
 
         self.desiredvel = 23*self.irresponsabilidad # La velocidad máxima de la persona
 
-        self.probadistraccion = max(0, (self.irresponsabilidad - 0.625)/(1.875-0.625)-0.1)
+        self.probadistraccion = max(0, np.random.normal(0.4,0.05))
 
         # PERSONALIDADES DE LOS CONDUCTORES
             # CONSERVADOR
@@ -65,11 +65,8 @@ class Auto:
                 self.choque = 0
             elif self.adelante.pos - self.pos < 4  and self.choque == 0:
                 print("hay dos que chocaron")
-                print(self.id)
-                print(self.vel)
-                print(self.adelante.id)
-                print(self.adelante.vel)                
-                print("")
+                print("El auto ", self.id,"chocó a la velocidad",self.vel,"con el auto ",self.adelante.id,"a la velocidad de ",self.adelante.vel)
+                print("La posición en la que chocaron fue en :",self.pos,"\n")
 
                 self.choque = 1
                 self.adelante.choque = 1

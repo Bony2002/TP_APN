@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
     # VARIABLES GLOBALES
-p_entrar=0.6
+p_entrar=0.7
 t_max=2000
 cooldown=2
 id=0
