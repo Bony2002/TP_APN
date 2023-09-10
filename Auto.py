@@ -1,10 +1,10 @@
 import numpy as np
 import Autopista
 class Auto:
-    def __init__(self,id,position,velocity,acceleration,carril):
+    def __init__(self,id,position,velocity,acceleration,carril,otro_carril):
         self.id = id # Id del auto
         self.carril = carril
-        self.autopista = None # Autopista a la que pertenece
+        self.otro_carril = otro_carril
         self.adelante = None # Vehiculo que se encuentra adelante de self
         self.atras = None # Vehiculo que se ecuentra detras de self
         self.max_acl = 3  # Máxima aceleración física posible para un auto
@@ -29,28 +29,28 @@ class Auto:
 
         self.desiredvel = 23*self.irresponsabilidad # La velocidad máxima de la persona
 
-        self.probadistraccion = max(0, np.random.normal(0.45,0.05))
+        self.probadistraccion = max(0, np.random.normal(0.4,0.05))
 
         # PERSONALIDADES DE LOS CONDUCTORES
             # CONSERVADOR
         if self.irresponsabilidad < 0.8:
             self.time_hdw = 2.5 # Time Headway: El gap de tiempo entre que el frente de un vehículo pase por un punto y el frente del vehículo que lo sigue pase por el mismo punto 
             self.mindst = 7 # La mínima distancia medida en metros que deben tener dos vehículos entre si
-            #self.druido = 0.1
+            self.druido = 0.1
             #self.exp = 1
 
             # AGRESIVO
         elif self.irresponsabilidad > 1.2:
             self.time_hdw = 1.5
             self.mindst = 2
-            #self.druido = 0.5
+            self.druido = 0.5
             #self.exp = 3
 
             # PROMEDIO
         else:
             self.time_hdw = 2
             self.mindst = 5
-            #self.druido = 0.15
+            self.druido = 0.15
             #self.exp = 2
 
         # Valores de la velocidad, aceleración y posición que se calcula para alcanzar en el siguiente momento
@@ -80,7 +80,8 @@ class Auto:
 
 
     def decision(self):
-        #error=np.random.normal(0,self.druido)
+        
+        error=np.random.normal(0,self.druido)
         gamma=4
         if self.adelante != None:
             self.desiredst = self.mindst + max(0, (self.vel*self.time_hdw + (self.vel-self.adelante.vel)/2*(self.max_acl*self.max_dacl)**0.5))
@@ -88,7 +89,7 @@ class Auto:
             self.nextpos = self.pos + self.vel*self.dt +1/2*self.acl*self.dt**2
             self.nextvel = max(0, self.vel + (self.acl)*self.dt)
         if self.probadistraccion <  np.random.uniform(0,1):
-            self.nextacl = max(-self.max_dacl,min(self.max_acl,self.max_acl*(1-(self.vel/self.desiredvel)**gamma - (self.desiredst/(self.gap))**2)))
+            self.nextacl = max(-self.max_dacl,min(self.max_acl,self.max_acl*(1-(self.vel/self.desiredvel)**gamma - (self.desiredst/(self.gap))**2) + error))
 
     def update(self):
         self.pos = self.nextpos

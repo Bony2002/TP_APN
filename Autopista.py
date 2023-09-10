@@ -1,20 +1,20 @@
 from Auto import Auto
 import numpy as np
 class Autopista:
-    def __init__(self,max_velocity,longitud,hora):
+    def __init__(self,max_velocity,longitud,hora,carril):
         self.primero = None
         self.ultimo = None
         self.hora = hora # Hora del día en la que se está simulando
         self.max_velocity = max_velocity # Velocidad máxima permitida en la autopista (m/s)
                                          # Hay que tener en cuenta el tramo que la maxima es 100km/h
         self.longitud = longitud # Longitud de la autopista (metros)
+        self.carril = carril
         self.cant_autos=0
         self.p_entrar=0.6
     
     def append(self, Auto):
         nuevo_auto = Auto
         self.cant_autos+=1
-        nuevo_auto.autopista = self
         if not self.primero:
             self.primero = nuevo_auto
             self.ultimo = nuevo_auto
@@ -53,7 +53,7 @@ class Autopista:
             while actual.adelante != None:
                 actual.update()
                 positions.append(actual.pos)
-                carriles.append(actual.carril)
+                carriles.append(actual.carril.carril)
                 actual=actual.adelante
             actual.update()
         return positions,carriles

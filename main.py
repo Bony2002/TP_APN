@@ -12,8 +12,8 @@ t_max=2000
 cooldown1=2
 cooldown2=2
 id=0
-Gral_Paz_1=Autopista(23,24300,0)
-Gral_Paz_2=Autopista(23,24300,0)
+Gral_Paz_1=Autopista(23,24300,0,1)
+Gral_Paz_2=Autopista(23,24300,0,2)
 
 
     # INICIALIZACION DEL PLOT
@@ -38,7 +38,7 @@ def update(frame):
             else:
                 vel_entrada = np.random.normal(18.0554, 1.5) # Normal para ver la velocidad de entrada
             acl_entrada = 0
-            new_auto = Auto(id,0,vel_entrada,acl_entrada,1)
+            new_auto = Auto(id,0,vel_entrada,acl_entrada,Gral_Paz_1,Gral_Paz_2)
             Gral_Paz_1.append(new_auto)
     if (cooldown2 >= 3) and (np.random.uniform(0,1) < p_entrar):
         id += 1.0
@@ -49,7 +49,7 @@ def update(frame):
             else:
                 vel_entrada = np.random.normal(18.0554, 1.5) # Normal para ver la velocidad de entrada
             acl_entrada = 0
-            new_auto = Auto(id,0,vel_entrada,acl_entrada,2)
+            new_auto = Auto(id,0,vel_entrada,acl_entrada,Gral_Paz_2,Gral_Paz_1)
             Gral_Paz_2.append(new_auto)
     cooldown1+=1
     cooldown2+=1
