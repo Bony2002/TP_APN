@@ -8,6 +8,7 @@ class Autopista:
         self.max_velocity = max_velocity # Velocidad máxima permitida en la autopista (m/s)
                                          # Hay que tener en cuenta el tramo que la maxima es 100km/h
         self.longitud = longitud # Longitud de la autopista (metros)
+        self.carril = carril
         self.cant_autos=0
         self.p_entrar=0.6
         self.carril = carril
@@ -15,7 +16,6 @@ class Autopista:
     def append(self, Auto):
         nuevo_auto = Auto
         self.cant_autos+=1
-        nuevo_auto.autopista = self
         if not self.primero:
             self.primero = nuevo_auto
             self.ultimo = nuevo_auto
