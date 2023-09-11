@@ -6,6 +6,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
+np.random.seed(2508)
+
     # VARIABLES DE SDC
 intro_SDC = False
 p_SDC = 0.9
@@ -16,8 +18,8 @@ sdc_cars = 0
 
     # VARIABLES GLOBALES
 #Probabilidades a probar 0.2 - 0.4 - 0.5 (Más de 0.5 la cantidad de choques es excesiva)
-p_entrar=0.4
-t_max=7200 # 1 hr : 7200
+p_entrar=0.5
+t_max=7200*2 # 1 hr : 7200
 cooldown1=2
 cooldown2=2
 iden=0
