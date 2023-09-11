@@ -20,7 +20,8 @@ class Auto:
                         # Se setea en 1000 como una exageración de número grande para representar
                         # al primer auto quien no tiene autos adelante
         self.choque = 0   # Esta chocado si/no
-        self.cooldownchoque=1 # Timer para retirar el choque
+        self.cooldownchoque = 1 # Timer para retirar el choque
+        self.cooldownLC = 0
 
 
         self.irresponsabilidad = np.random.normal(1,0.15) # Calculamos el % de irresponsabilidad
@@ -110,6 +111,7 @@ class Auto:
             aux_carril = self.otro_carril
             self.otro_carril = self.carril
             self.carril = aux_carril
+            print("cambio carril", self.id)
         error = np.random.uniform(0,self.human_error)
         gamma=4
         if self.adelante != None:
@@ -128,7 +130,12 @@ class Auto:
         if self.adelante != None:
             self.gap = self.adelante.pos - self.pos - 4
 
-    def lane_change(self):
+    #TODO EL CONTENIDO DE ESTA FUNCION REFIERE AL MODELO MOBIL, VER SLIDES
+    def lane_change(self): 
+        if(self.cooldownLC > 0):
+            self.cooldownLC -= 1
+            return False, False
+
         if(self.adelante == None or self.atras == None):
             return False, False
 
@@ -170,6 +177,7 @@ class Auto:
                 return False, False
         else:
             if self_after - self_now > p*(newatras_now - newatras_after) + a_thr :
+                self.cooldownLC = 3
                 return True, nuevo_atras
             else:
                 return False, False

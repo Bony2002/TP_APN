@@ -10,8 +10,6 @@ from matplotlib.animation import FuncAnimation
     # VARIABLES DE SDC
 intro_SDC = False
 p_SDC = 0.5
-tiempos_terminacion_SDC = []
-datos_choques_SDC = []
 
     # VARIABLES GLOBALES
 p_entrar=np.random.normal(0.2,0.1)
@@ -77,18 +75,6 @@ def update(frame):
 
     cooldown1+=1
     cooldown2+=2
-    tiempos1,choques1 = Gral_Paz_1.revision(contador)
-    tiempos2,choques2 = Gral_Paz_2.revision(contador)
-    tiempos_terminacion = tiempos_terminacion + tiempos1[0]
-    tiempos_terminacion = tiempos_terminacion + tiempos2[0]
-    datos_choques = datos_choques + choques1[0]
-    datos_choques = datos_choques + choques2[0]
-
-    if intro_SDC:
-        tiempos_terminacion_SDC = tiempos_terminacion_SDC + tiempos1[1]
-        tiempos_terminacion_SDC = tiempos_terminacion_SDC + tiempos2[1]
-        datos_choques_SDC = datos_choques_SDC + choques1[1]
-        datos_choques_SDC = datos_choques_SDC + choques2[1]
 
 
     Gral_Paz_1.analisis()
