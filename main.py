@@ -7,13 +7,14 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
     # VARIABLES GLOBALES
-p_entrar=np.random.normal(0.2,0.1)
+p_entrar=np.random.normal(0.7,0.1)
 t_max=2000
 cooldown1=2
 cooldown2=2
-id=0
-Gral_Paz_1=Autopista(23,24300,0)
-Gral_Paz_2=Autopista(23,24300,0)
+iden=0
+Gral_Paz_1=Autopista(23,24300,0,1)
+Gral_Paz_2=Autopista(23,24300,0,2)
+contador = 0
 
 
     # INICIALIZACION DEL PLOT
@@ -28,9 +29,9 @@ def initplot():
 
     # MAIN
 def update(frame):
-    global cooldown1, cooldown2, id, p_entrar, Gral_Paz_1, Gral_Paz_2
+    global cooldown1, cooldown2, iden, p_entrar, Gral_Paz_1, Gral_Paz_2, contador
     if (cooldown1 >= 3) and (np.random.uniform(0,1) < p_entrar):
-        id+=1.0
+        
         cooldown1=-1
         if (Gral_Paz_1.ultimo.pos > 10 if Gral_Paz_1.ultimo != None else True):
             if Gral_Paz_1.ultimo != None and Gral_Paz_1.ultimo.vel < 15 and Gral_Paz_1.ultimo.pos < 100:
@@ -38,10 +39,10 @@ def update(frame):
             else:
                 vel_entrada = np.random.normal(18.0554, 1.5) # Normal para ver la velocidad de entrada
             acl_entrada = 0
-            new_auto = Auto(id,0,vel_entrada,acl_entrada,1)
+            iden+=1.0
+            new_auto = Auto(iden,0,vel_entrada,acl_entrada,Gral_Paz_1,Gral_Paz_2)
             Gral_Paz_1.append(new_auto)
     if (cooldown2 >= 3) and (np.random.uniform(0,1) < p_entrar):
-        id += 1.0
         cooldown2 = -1
         if (Gral_Paz_2.ultimo.pos > 10 if Gral_Paz_2.ultimo != None else True):
             if Gral_Paz_2.ultimo != None and Gral_Paz_2.ultimo.vel < 15 and Gral_Paz_2.ultimo.pos < 100:
@@ -49,7 +50,8 @@ def update(frame):
             else:
                 vel_entrada = np.random.normal(18.0554, 1.5) # Normal para ver la velocidad de entrada
             acl_entrada = 0
-            new_auto = Auto(id,0,vel_entrada,acl_entrada,2)
+            iden+=1.0
+            new_auto = Auto(iden,0,vel_entrada,acl_entrada,Gral_Paz_2,Gral_Paz_1)
             Gral_Paz_2.append(new_auto)
     cooldown1+=1
     cooldown2+=1
@@ -61,11 +63,13 @@ def update(frame):
     positions2,carril2 = Gral_Paz_2.actualizacion()
     positions = positions1 + positions2
     carriles = carril1 + carril2
-    #dots.set_data(positions2, np.ones(len(positions2)) + np.ones(len(positions2)) )
     dots.set_data(positions, carriles)
     dots.set_ydata(carriles)
-    #dots.set_ydata(np.ones(len(positions2)) + np.ones(len(positions2)))
+    contador += 1
+    if contador >= t_max:
+        ani.event_source.stop()
     return dots,
+
 
 ani = FuncAnimation(fig, update, init_func=initplot, frames=range(t_max), blit=True)
 plt.show()

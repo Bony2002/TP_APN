@@ -1,9 +1,10 @@
 import numpy as np
 import Autopista
 class Auto:
-    def __init__(self,id,position,velocity,acceleration,carril):
+    def __init__(self,id,position,velocity,acceleration,carril,otro_carril):
         self.id = id # Id del auto
         self.carril = carril
+        self.otro_carril = otro_carril
         self.autopista = None # Autopista a la que pertenece
         self.adelante = None # Vehiculo que se encuentra adelante de self
         self.atras = None # Vehiculo que se ecuentra detras de self
@@ -21,7 +22,7 @@ class Auto:
         self.cooldownchoque=0 # Timer para retirar el choque
 
 
-        self.irresponsabilidad = np.random.normal(1,0.2) # Calculamos el % de irresponsabilidad
+        self.irresponsabilidad = np.random.normal(1,0.1) # Calculamos el % de irresponsabilidad
         if (self.irresponsabilidad<0.625):
             self.irresponsabilidad=0.625
         if (self.irresponsabilidad>1.875):
@@ -29,7 +30,7 @@ class Auto:
 
         self.desiredvel = 23*self.irresponsabilidad # La velocidad máxima de la persona
 
-        self.probadistraccion = max(0, np.random.normal(0.45,0.05))
+        self.probadistraccion = max(0, np.random.normal(0.2,0.05))
 
         # PERSONALIDADES DE LOS CONDUCTORES
             # CONSERVADOR
@@ -81,6 +82,20 @@ class Auto:
 
     def decision(self):
         #error=np.random.normal(0,self.druido)
+        lanechange, nuevo_atras = self.lane_change()
+        if lanechange:
+            self.carril.eliminar(self.id)
+            nuevo_adelante = nuevo_atras.adelante
+            nuevo_atras.adelante = self
+            nuevo_adelante.atras = self
+            self.atras = nuevo_atras
+            self.adelante = nuevo_adelante
+            aux_carril = self.otro_carril
+            self.otro_carril = self.carril
+            self.carril = aux_carril
+
+
+            
         gamma=4
         if self.adelante != None:
             self.desiredst = self.mindst + max(0, (self.vel*self.time_hdw + (self.vel-self.adelante.vel)/2*(self.max_acl*self.max_dacl)**0.5))
@@ -90,9 +105,56 @@ class Auto:
         if self.probadistraccion <  np.random.uniform(0,1):
             self.nextacl = max(-self.max_dacl,min(self.max_acl,self.max_acl*(1-(self.vel/self.desiredvel)**gamma - (self.desiredst/(self.gap))**2)))
 
+
     def update(self):
         self.pos = self.nextpos
         self.acl = self.nextacl
         self.vel = self.nextvel
         if self.adelante != None:
             self.gap = self.adelante.pos - self.pos - 4
+
+    def lane_change(self):
+        if(self.adelante == None or self.atras == None):
+            return False, False
+    
+        nuevo_atras, nuevo_adelante = self.otro_carril.query(self.pos)
+        if nuevo_atras == False or nuevo_adelante == False:
+            return False, False
+        
+        gamma=4
+        newatras_gap = self.pos - nuevo_atras.pos - 4
+        newatras_desiredst = nuevo_atras.mindst + max(0, (nuevo_atras.vel*nuevo_atras.time_hdw + (nuevo_atras.vel-self.vel)/2*(nuevo_atras.max_acl*nuevo_atras.max_dacl)**0.5))
+        newatras_after = max(-nuevo_atras.max_dacl,min(nuevo_atras.max_acl,nuevo_atras.max_acl*(1-(nuevo_atras.vel/nuevo_atras.desiredvel)**gamma - (newatras_desiredst/(newatras_gap))**2)))
+        if newatras_after <= -nuevo_atras.max_dacl :
+            return False, False
+        
+        self_gap = nuevo_adelante.pos - self.pos - 4
+        self_desiredst = self.mindst + max(0, (self.vel*self.time_hdw + (self.vel-nuevo_adelante.vel)/2*(self.max_acl*self.max_dacl)**0.5))
+        self_after = max(-self.max_dacl,min(self.max_acl,self.max_acl*(1-(self.vel/self.desiredvel)**gamma - (self_desiredst/(self_gap))**2)))
+        
+        self_now = max(-self.max_dacl,min(self.max_acl,self.max_acl*(1-(self.vel/self.desiredvel)**gamma - (self.desiredst/(self.gap))**2)))
+        
+        newatras_gap = nuevo_atras.adelante.pos - nuevo_atras.pos - 4
+        newatras_desiredst = nuevo_atras.mindst + max(0, (nuevo_atras.vel*nuevo_atras.time_hdw + (nuevo_atras.vel-nuevo_atras.adelante.vel)/2*(nuevo_atras.max_acl*nuevo_atras.max_dacl)**0.5))
+        newatras_now = max(-nuevo_atras.max_dacl,min(nuevo_atras.max_acl,nuevo_atras.max_acl*(1-(nuevo_atras.vel/nuevo_atras.desiredvel)**gamma - (newatras_desiredst/(newatras_gap))**2)))
+
+        p = 1 - self.irresponsabilidad + 0.7
+        a_thr = 0.2
+        if self.carril.carril == 2:
+            atras_gap = self.pos - self.atras.pos - 4
+            atras_desiredst = self.atras.mindst + max(0, (self.atras.vel*self.atras.time_hdw + (self.atras.vel-self.vel)/2*(self.atras.max_acl*self.atras.max_dacl)**0.5))
+            atras_now = max(-self.atras.max_dacl,min(self.atras.max_acl,self.atras.max_acl*(1-(self.atras.vel/self.atras.desiredvel)**gamma - (atras_desiredst/(atras_gap))**2)))
+
+            atras_gap = self.adelante.pos - self.atras.pos - 4
+            atras_desiredst = self.atras.mindst + max(0, (self.atras.vel*self.atras.time_hdw + (self.atras.vel-self.adelante.vel)/2*(self.atras.max_acl*self.atras.max_dacl)**0.5))
+            atras_after =  max(-self.atras.max_dacl,min(self.atras.max_acl,self.atras.max_acl*(1-(self.atras.vel/self.atras.desiredvel)**gamma - (atras_desiredst/(atras_gap))**2)))
+    
+            if self_after - self_now > p*(atras_now + newatras_now - atras_after - newatras_after) + a_thr :
+                return True, nuevo_atras
+            else:
+                return False, False   
+        else:
+            if self_after - self_now > p*(newatras_now - newatras_after) + a_thr :
+                return True, nuevo_atras
+            else:
+                return False, False

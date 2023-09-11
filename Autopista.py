@@ -1,7 +1,7 @@
 from Auto import Auto
 import numpy as np
 class Autopista:
-    def __init__(self,max_velocity,longitud,hora):
+    def __init__(self,max_velocity,longitud,hora,carril):
         self.primero = None
         self.ultimo = None
         self.hora = hora # Hora del día en la que se está simulando
@@ -10,7 +10,8 @@ class Autopista:
         self.longitud = longitud # Longitud de la autopista (metros)
         self.cant_autos=0
         self.p_entrar=0.6
-    
+        self.carril = carril
+
     def append(self, Auto):
         nuevo_auto = Auto
         self.cant_autos+=1
@@ -53,7 +54,7 @@ class Autopista:
             while actual.adelante != None:
                 actual.update()
                 positions.append(actual.pos)
-                carriles.append(actual.carril)
+                carriles.append(actual.carril.carril)
                 actual=actual.adelante
             actual.update()
         return positions,carriles
@@ -77,3 +78,15 @@ class Autopista:
         resumen[i]=[actual.id,actual.pos,actual.vel,actual.acl]
         return resumen
     
+    def query(self,posicion):
+        actual = self.ultimo
+        if actual == None:
+            return False, False
+        while(actual.pos<posicion):
+            actual=actual.adelante
+            if actual == None:
+                break
+        if  actual != None and actual.atras != None:
+            return actual.atras,actual
+        else:
+            return False, False
