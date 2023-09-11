@@ -7,15 +7,17 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
     # VARIABLES DE SDC
-intro_SDC = True
-p_SDC = 0.3
+intro_SDC = False
+p_SDC = 0.9
 tiempos_terminacion_SDC = []
 datos_choques_SDC = []
+sdc_cars = 0
 
 
     # VARIABLES GLOBALES
+#Probabilidades a probar 0.2 - 0.4 - 0.5 (Más de 0.5 la cantidad de choques es excesiva)
 p_entrar=0.4
-t_max=5000
+t_max=7200 # 1 hr : 7200
 cooldown1=2
 cooldown2=2
 iden=0
@@ -23,6 +25,7 @@ Gral_Paz_1=Autopista(23,24300,0,1)
 Gral_Paz_2=Autopista(23,24300,0,2)
 tiempos_terminacion = []
 datos_choques = []
+cars = 0
 
 for t in range(t_max):
 
@@ -42,8 +45,10 @@ for t in range(t_max):
 
             if intro_SDC and (np.random.uniform(0,1) < p_SDC):
                 new_auto = SDC(iden,t,0,vel_entrada,acl_entrada,Gral_Paz_1,Gral_Paz_2)
+                sdc_cars+=1
             else :
                 new_auto = Auto(iden,t,0,vel_entrada,acl_entrada,Gral_Paz_1,Gral_Paz_2)
+                cars+=1
             Gral_Paz_1.append(new_auto)
 
     # INTRODUCCIÓN DE AUTOS AL SEGUNDO CARRIL
@@ -62,8 +67,10 @@ for t in range(t_max):
 
             if intro_SDC and (np.random.uniform(0,1) < p_SDC):
                 new_auto = SDC(iden,t,0,vel_entrada,acl_entrada,Gral_Paz_2,Gral_Paz_1)
+                sdc_cars+=1
             else :
                 new_auto = Auto(iden,t,0,vel_entrada,acl_entrada,Gral_Paz_2,Gral_Paz_1)
+                cars+=1
             Gral_Paz_2.append(new_auto)
 
     
@@ -91,6 +98,8 @@ for t in range(t_max):
 
 print(np.array(tiempos_terminacion).mean())
 print(len(datos_choques))
+print(len(datos_choques)/cars)
 if intro_SDC:
     print(np.array(tiempos_terminacion_SDC).mean())
     print(len(datos_choques_SDC))
+    print(len(datos_choques_SDC)/sdc_cars)

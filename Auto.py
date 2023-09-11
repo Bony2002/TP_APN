@@ -23,33 +23,38 @@ class Auto:
         self.cooldownchoque=1 # Timer para retirar el choque
 
 
-        self.irresponsabilidad = np.random.normal(1,0.1) # Calculamos el % de irresponsabilidad
+        self.irresponsabilidad = np.random.normal(1,0.15) # Calculamos el % de irresponsabilidad
         if (self.irresponsabilidad<0.625):
             self.irresponsabilidad=0.625
         if (self.irresponsabilidad>1.875):
             self.irresponsabilidad=1.875
 
-        self.desiredvel = 23*self.irresponsabilidad # La velocidad máxima de la persona
+        self.desiredvel = self.carril.max_velocity_t1*self.irresponsabilidad # La velocidad máxima a la que desea ir una persona
 
-        self.probadistraccion = max(0, np.random.normal(0.25,0.01))
+        self.probadistraccion = max(0, np.random.normal(0.3,0.01))
+
+        self.time_hdw = 5 # Time Headway: El gap de tiempo entre que el frente de un vehículo pase por un punto y el frente del vehículo que lo sigue pase por el mismo punto
 
         # PERSONALIDADES DE LOS CONDUCTORES
             # CONSERVADOR
         if self.irresponsabilidad < 0.8:
-            self.time_hdw = 2.5 # Time Headway: El gap de tiempo entre que el frente de un vehículo pase por un punto y el frente del vehículo que lo sigue pase por el mismo punto
-            self.mindst = 6 # La mínima distancia medida en metros que deben tener dos vehículos entre si
+            self.time_hdw = 5.5 # Multiplicador del time headway que permite calcular el time_hdw dependiendo de la velocidad del auto
+            self.mindst = 7 # La mínima distancia medida en metros que deben tener dos vehículos entre si
+            self.human_error = 0.05
             self.personalidad = "Conservador"
 
             # AGRESIVO
         elif self.irresponsabilidad > 1.2:
-            self.time_hdw = 1.5
-            self.mindst = 2
+            self.time_hdw = 4.5
+            self.mindst = 5
+            self.human_error = 0.2
             self.personalidad = "Agresivo"
 
             # PROMEDIO
         else:
-            self.time_hdw = 2
-            self.mindst = 5
+            self.time_hdw = 5
+            self.mindst = 6
+            self.human_error = 0.1
             self.personalidad = "Promedio"
 
         # Valores de la velocidad, aceleración y posición que se calcula para alcanzar en el siguiente momento
@@ -59,8 +64,9 @@ class Auto:
         self.desiredst=0
 
         self.terminado = 0 # Bool que reprensemta cuando un auto llegó a destino
+        self.tramo = 0 # Indicador del tramo de la Gral Paz en donde estoy: tramo = 0 maxima de 80 km/h - tramo = 1 maxima de 100 km/h
 
-    def revision(self,Autopista):
+    def revision(self,Autopista,t):
         datos_choque=[]
         if self.pos > 24300:
             self.terminado=1
@@ -74,7 +80,7 @@ class Auto:
                 # print("El auto ", self.id,"chocó a la velocidad",self.vel,"con el auto ",self.adelante.id,"a la velocidad de ",self.adelante.vel)
                 # print("La posición en la que chocaron fue en :",self.pos,"\n")
 
-                datos_choque = [self.id,self.vel,self.adelante.id,self.adelante.vel,self.pos]
+                datos_choque = [self.id,self.vel,self.personalidad,self.adelante.id,self.adelante.vel,self.adelante.pos,self.adelante.personalidad,t]
                 velocidad_impacto = max(self.vel,self.adelante.vel)
                 self.cooldownchoque = 10 * velocidad_impacto**2
                 self.choque = 1
@@ -89,6 +95,10 @@ class Auto:
 
 
     def decision(self):
+        # Se recalcula la desired velocity porque en Gral. Paz hay un segundo tramos en donde la velocidad máxima es de 100 km/h
+        if self.tramo == 0 and self.pos > 21000:
+            self.tramo = 1
+            self.desiredvel = self.carril.max_velocity_t2*self.irresponsabilidad # La velocidad máxima a la que desea ir una persona
         lanechange, nuevo_atras = self.lane_change()
         if lanechange:
             self.carril.eliminar(self.id)
@@ -100,6 +110,7 @@ class Auto:
             aux_carril = self.otro_carril
             self.otro_carril = self.carril
             self.carril = aux_carril
+        error = np.random.uniform(0,self.human_error)
         gamma=4
         if self.adelante != None:
             self.desiredst = self.mindst + max(0, (self.vel*self.time_hdw + (self.vel-self.adelante.vel)/2*(self.max_acl*self.max_dacl)**0.5))

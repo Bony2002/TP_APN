@@ -5,8 +5,8 @@ class Autopista:
         self.primero = None
         self.ultimo = None
         self.hora = hora # Hora del día en la que se está simulando
-        self.max_velocity = max_velocity # Velocidad máxima permitida en la autopista (m/s)
-                                         # Hay que tener en cuenta el tramo que la maxima es 100km/h
+        self.max_velocity_t1 = max_velocity # Velocidad máxima permitida en la autopista (m/s)
+        self.max_velocity_t2 = max_velocity + 4.7778 # Velocidad máxima permitida en la autopista (m/s) 
         self.longitud = longitud # Longitud de la autopista (metros)
         self.carril = carril
         self.cant_autos=0
@@ -115,3 +115,6 @@ class Autopista:
             return actual.atras,actual
         else:
             return False, False
+        
+    def radars(self):
+        pass

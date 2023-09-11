@@ -24,11 +24,11 @@ class SDC:
         self.cooldownchoque=1 # Timer para retirar el choque
 
         self.probadistraccion = 0
-        self.desiredvel = 20
+        self.desiredvel = 22
 
-            # Conductor Promedio
-        self.time_hdw = 2.5
-        self.mindst = 5
+        # Conductor SDC
+        self.time_hdw = 5.5
+        self.mindst = 7
 
         # Valores de la velocidad, aceleración y posición que se calcula para alcanzar en el siguiente momento
         self.nextvel=0
@@ -37,6 +37,8 @@ class SDC:
         self.desiredst=0
 
         self.terminado = 0 # Bool que reprensemta cuando un auto llegó a destino
+        self.tramo = 0 # Indicador del tramo de la Gral Paz en donde estoy: tramo = 0 maxima de 80 km/h - tramo = 1 maxima de 100 km/h
+
 
     def revision(self,Autopista,t):
         datos_choque=[]
@@ -52,7 +54,7 @@ class SDC:
                 # print("El auto ", self.id,"chocó a la velocidad",self.vel,"con el auto ",self.adelante.id,"a la velocidad de ",self.adelante.vel)
                 # print("La posición en la que chocaron fue en :",self.pos,"\n")
 
-                datos_choque = [self.id,self.vel,self.personalidad,self.adelante.id,self.adelante.vel,self.self.pos,self.adelante.personalidad,t]
+                datos_choque = [self.id,self.vel,self.personalidad,self.adelante.id,self.adelante.vel,self.adelante.pos,self.adelante.personalidad,t]
                 velocidad_impacto = max(self.vel,self.adelante.vel)
                 self.cooldownchoque = 10 * velocidad_impacto**2
                 self.choque = 1
@@ -67,6 +69,11 @@ class SDC:
 
 
     def decision(self):
+        #self.time_hdw = self.vel*self.mult_time_hdw
+        # Se recalcula la desired velocity porque en Gral. Paz hay un segundo tramos en donde la velocidad máxima es de 100 km/h
+        if self.tramo == 0 and self.pos > 21000:
+            self.tramo = 1
+            self.desiredvel = self.carril.max_velocity_t2-1 # La velocidad máxima a la que desea ir una persona
         lanechange, nuevo_atras = self.lane_change()
         if lanechange:
             self.carril.eliminar(self.id)
@@ -85,7 +92,7 @@ class SDC:
             self.nextpos = self.pos + self.vel*self.dt +1/2*self.acl*self.dt**2
             self.nextvel = max(0, self.vel + (self.acl)*self.dt)
         if self.probadistraccion <  np.random.uniform(0,1):
-            self.nextacl = max(-self.max_dacl,min(self.max_acl,self.max_acl*(1-(self.vel/self.desiredvel)**gamma - (self.desiredst/(self.gap)))))
+            self.nextacl = max(-self.max_dacl,min(self.max_acl,self.max_acl*(1-(self.vel/self.desiredvel)**gamma - (self.desiredst/(self.gap)**2 ))))
 
 
     def update(self):
