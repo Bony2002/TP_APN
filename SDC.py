@@ -1,9 +1,9 @@
 import numpy as np
 import Autopista
-class Auto:
+class SDC:
     def __init__(self,id,tiempo_entrada,position,velocity,acceleration,carril,otro_carril):
         self.id = id # Id del auto
-        self.sdc = False # Identificador de self driving car
+        self.sdc = True # Identificador de self driving car
         self.tiempo_entrada = tiempo_entrada
         self.carril = carril
         self.otro_carril = otro_carril
@@ -11,6 +11,7 @@ class Auto:
         self.atras = None # Vehiculo que se ecuentra detras de self
         self.max_acl = 3  # Máxima aceleración física posible para un auto
         self.max_dacl = 4   # La máxima desaceleración física posible para un auto
+        self.personalidad = "Self Driving Car"
 
         self.dt = 0.5 # Delta Time : Lapso de tiempo que se está teniendo en cuenta durante la simulación
         self.pos = position # Posición del auto en la autopista (metros)
@@ -22,35 +23,12 @@ class Auto:
         self.choque = 0   # Esta chocado si/no
         self.cooldownchoque=1 # Timer para retirar el choque
 
+        self.probadistraccion = 0
+        self.desiredvel = 20
 
-        self.irresponsabilidad = np.random.normal(1,0.1) # Calculamos el % de irresponsabilidad
-        if (self.irresponsabilidad<0.625):
-            self.irresponsabilidad=0.625
-        if (self.irresponsabilidad>1.875):
-            self.irresponsabilidad=1.875
-
-        self.desiredvel = 23*self.irresponsabilidad # La velocidad máxima de la persona
-
-        self.probadistraccion = max(0, np.random.normal(0.25,0.01))
-
-        # PERSONALIDADES DE LOS CONDUCTORES
-            # CONSERVADOR
-        if self.irresponsabilidad < 0.8:
-            self.time_hdw = 2.5 # Time Headway: El gap de tiempo entre que el frente de un vehículo pase por un punto y el frente del vehículo que lo sigue pase por el mismo punto
-            self.mindst = 6 # La mínima distancia medida en metros que deben tener dos vehículos entre si
-            self.personalidad = "Conservador"
-
-            # AGRESIVO
-        elif self.irresponsabilidad > 1.2:
-            self.time_hdw = 1.5
-            self.mindst = 2
-            self.personalidad = "Agresivo"
-
-            # PROMEDIO
-        else:
-            self.time_hdw = 2
-            self.mindst = 5
-            self.personalidad = "Promedio"
+            # Conductor Promedio
+        self.time_hdw = 2.5
+        self.mindst = 5
 
         # Valores de la velocidad, aceleración y posición que se calcula para alcanzar en el siguiente momento
         self.nextvel=0
@@ -60,7 +38,7 @@ class Auto:
 
         self.terminado = 0 # Bool que reprensemta cuando un auto llegó a destino
 
-    def revision(self,Autopista):
+    def revision(self,Autopista,t):
         datos_choque=[]
         if self.pos > 24300:
             self.terminado=1
@@ -74,7 +52,7 @@ class Auto:
                 # print("El auto ", self.id,"chocó a la velocidad",self.vel,"con el auto ",self.adelante.id,"a la velocidad de ",self.adelante.vel)
                 # print("La posición en la que chocaron fue en :",self.pos,"\n")
 
-                datos_choque = [self.id,self.vel,self.adelante.id,self.adelante.vel,self.pos]
+                datos_choque = [self.id,self.vel,self.personalidad,self.adelante.id,self.adelante.vel,self.self.pos,self.adelante.personalidad,t]
                 velocidad_impacto = max(self.vel,self.adelante.vel)
                 self.cooldownchoque = 10 * velocidad_impacto**2
                 self.choque = 1
@@ -107,7 +85,7 @@ class Auto:
             self.nextpos = self.pos + self.vel*self.dt +1/2*self.acl*self.dt**2
             self.nextvel = max(0, self.vel + (self.acl)*self.dt)
         if self.probadistraccion <  np.random.uniform(0,1):
-            self.nextacl = max(-self.max_dacl,min(self.max_acl,self.max_acl*(1-(self.vel/self.desiredvel)**gamma - (self.desiredst/(self.gap))**2 )))
+            self.nextacl = max(-self.max_dacl,min(self.max_acl,self.max_acl*(1-(self.vel/self.desiredvel)**gamma - (self.desiredst/(self.gap)))))
 
 
     def update(self):
@@ -120,29 +98,29 @@ class Auto:
     def lane_change(self):
         if(self.adelante == None or self.atras == None):
             return False, False
-
+    
         nuevo_atras, nuevo_adelante = self.otro_carril.query(self.pos)
         if nuevo_atras == False or nuevo_adelante == False:
             return False, False
-
+        
         gamma=4
         newatras_gap = self.pos - nuevo_atras.pos - 4
         newatras_desiredst = nuevo_atras.mindst + max(0, (nuevo_atras.vel*nuevo_atras.time_hdw + (nuevo_atras.vel-self.vel)/2*(nuevo_atras.max_acl*nuevo_atras.max_dacl)**0.5))
         newatras_after = max(-nuevo_atras.max_dacl,min(nuevo_atras.max_acl,nuevo_atras.max_acl*(1-(nuevo_atras.vel/nuevo_atras.desiredvel)**gamma - (newatras_desiredst/(newatras_gap))**2)))
         if newatras_after <= -nuevo_atras.max_dacl :
             return False, False
-
+        
         self_gap = nuevo_adelante.pos - self.pos - 4
         self_desiredst = self.mindst + max(0, (self.vel*self.time_hdw + (self.vel-nuevo_adelante.vel)/2*(self.max_acl*self.max_dacl)**0.5))
         self_after = max(-self.max_dacl,min(self.max_acl,self.max_acl*(1-(self.vel/self.desiredvel)**gamma - (self_desiredst/(self_gap))**2)))
-
+        
         self_now = max(-self.max_dacl,min(self.max_acl,self.max_acl*(1-(self.vel/self.desiredvel)**gamma - (self.desiredst/(self.gap))**2)))
-
+        
         newatras_gap = nuevo_atras.adelante.pos - nuevo_atras.pos - 4
         newatras_desiredst = nuevo_atras.mindst + max(0, (nuevo_atras.vel*nuevo_atras.time_hdw + (nuevo_atras.vel-nuevo_atras.adelante.vel)/2*(nuevo_atras.max_acl*nuevo_atras.max_dacl)**0.5))
         newatras_now = max(-nuevo_atras.max_dacl,min(nuevo_atras.max_acl,nuevo_atras.max_acl*(1-(nuevo_atras.vel/nuevo_atras.desiredvel)**gamma - (newatras_desiredst/(newatras_gap))**2)))
 
-        p = 1 - self.irresponsabilidad + 0.7
+        p = 0.5
         a_thr = 0.2
         if self.carril.carril == 2:
             atras_gap = self.pos - self.atras.pos - 4
@@ -152,11 +130,11 @@ class Auto:
             atras_gap = self.adelante.pos - self.atras.pos - 4
             atras_desiredst = self.atras.mindst + max(0, (self.atras.vel*self.atras.time_hdw + (self.atras.vel-self.adelante.vel)/2*(self.atras.max_acl*self.atras.max_dacl)**0.5))
             atras_after =  max(-self.atras.max_dacl,min(self.atras.max_acl,self.atras.max_acl*(1-(self.atras.vel/self.atras.desiredvel)**gamma - (atras_desiredst/(atras_gap))**2)))
-
+    
             if self_after - self_now > p*(atras_now + newatras_now - atras_after - newatras_after) + a_thr :
                 return True, nuevo_atras
             else:
-                return False, False
+                return False, False   
         else:
             if self_after - self_now > p*(newatras_now - newatras_after) + a_thr :
                 return True, nuevo_atras

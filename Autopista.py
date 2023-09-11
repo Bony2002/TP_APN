@@ -1,4 +1,4 @@
-from Auto import Auto
+import Auto
 import numpy as np
 class Autopista:
     def __init__(self,max_velocity,longitud,hora,carril):
@@ -10,7 +10,6 @@ class Autopista:
         self.longitud = longitud # Longitud de la autopista (metros)
         self.carril = carril
         self.cant_autos=0
-        self.p_entrar=0.6
         self.carril = carril
 
     def append(self, Auto):
@@ -59,13 +58,39 @@ class Autopista:
             actual.update()
         return positions,carriles
 
-    def revision(self):
+    def revision(self,t):
+        tiempo_terminacion = []
+        tiempo_terminacion_SDC = []
+        choques = []
+        choques_SDC = []
+        eliminar=False
         if self.ultimo!=None:
             actual=self.ultimo
             while actual.adelante != None:
-                actual.revision(self)
-                actual=actual.adelante    
-            actual.revision(self)
+                datos = actual.revision(self,t)
+                if len(datos) != 0:
+                    if actual.sdc == True:
+                        choques_SDC.append(datos)
+                    elif actual.sdc==False:
+                        choques.append(datos)
+                if actual.terminado==1 :
+                    if actual.sdc == True:
+                        tiempo_terminacion_SDC.append(t-actual.tiempo_entrada)    
+                    elif actual.sdc == False:
+                        tiempo_terminacion.append(t-actual.tiempo_entrada)
+                    id_eliminar = actual.id
+                    eliminar=True
+                actual=actual.adelante
+                if eliminar==True :
+                    self.eliminar(id_eliminar)
+            datos = actual.revision(self,t)
+            if len(datos) != 0:
+                    choques.append(datos)
+            if actual.pos > 24300 and actual.terminado==0 :
+                    self.terminado=1
+                    tiempo_terminacion.append(t-actual.tiempo_entrada)
+                    self.eliminar(actual.id)
+        return (tiempo_terminacion,tiempo_terminacion_SDC),(choques,choques_SDC)
 
     def resumen(self):
         actual=self.ultimo
