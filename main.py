@@ -14,6 +14,7 @@ cooldown2=2
 iden=0
 Gral_Paz_1=Autopista(23,24300,0,1)
 Gral_Paz_2=Autopista(23,24300,0,2)
+contador=0
 
 
     # INICIALIZACION DEL PLOT
