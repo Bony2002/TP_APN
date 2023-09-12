@@ -195,36 +195,26 @@ data = {
 }
 
 
-#seeds = [44262256,44362396,44755006]
-horas = [2,5,7]
-p_entrar=[0.2,0.4,0.6]
-sdc = [False,True]
-p_sdc = [0.3,0.8]
+seeds = [44262256,44362396,44755006,44232678,44598525,]
+horas = [3]
+p_entrar=[0.4]
+sdc = [True]
+p_sdc = [0,0.3,0.8]
 
-for hr in horas:
+for seed in seeds:
     for p in p_entrar:
         for hay_sdc in sdc:
-            if hay_sdc==True:
-                for p_s in p_sdc:
-                    np.random.seed(256396006)
-                    t_max=7200*hr
-                    crear_autopista_y_simular(p,t_max,hay_sdc,p_s,data)
-                    data["horas"].append(hr)
-                    data["prob_entrar"].append(p)
-                    data["sdc"].append(hay_sdc)
-                    data["prop_sdc"].append(p_s)
-                    print("La fila:",hr,p,hay_sdc,p_s,"está lista")
-            else:
-                np.random.seed(256396006)
-                t_max=7200*hr
-                crear_autopista_y_simular(p,t_max,hay_sdc,0,data)
-                data["horas"].append(hr)
+            for p_s in p_sdc:
+                np.random.seed(seed)
+                t_max=7200*horas[0]
+                crear_autopista_y_simular(p,t_max,hay_sdc,p_s,data)
+                data["horas"].append(horas[0])
                 data["prob_entrar"].append(p)
                 data["sdc"].append(hay_sdc)
-                data["prop_sdc"].append(None)
-                print("La fila:",hr,p,hay_sdc,None,"está lista")
+                data["prop_sdc"].append(p_s)
+                print("La fila:",p,hay_sdc,p_s,"está lista")
 
 
 df = pd.DataFrame(data)
-file_name="data.csv"
+file_name="data_pl2.csv"
 df.to_csv(file_name, index=False)
