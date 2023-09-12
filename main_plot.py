@@ -20,15 +20,17 @@ iden=0
 Gral_Paz_1=Autopista(23,24300,0,1)
 Gral_Paz_2=Autopista(23,24300,0,2)
 contador=0
-
+dots = None
 
     # INICIALIZACION DEL PLOT
 fig, ax = plt.subplots(figsize=(10, 4))
+#dots, = ax.plot([], [], 'bo')
 
 def initplot():
-    ax.set_xlim(0, 2000)
+    global dots
+    ax.set_xlim(0, 4000)
     ax.set_ylim(0.5, 2.5)
-
+    #dots.set_data([], [])
     dots = ax.scatter([], [], c='b', marker='o', s=20)
     return dots,
 
@@ -36,7 +38,7 @@ dots = ax.scatter([], [], c='b', marker='o', s=20)
 
     # MAIN
 def update(frame):
-    global cooldown1, cooldown2, iden, p_entrar, Gral_Paz_1, Gral_Paz_2, contador
+    global cooldown1, cooldown2, iden, p_entrar, Gral_Paz_1, Gral_Paz_2, contador, dots
     if (cooldown1 >= 3) and (np.random.uniform(0,1) < p_entrar):
         
         cooldown1=-1
@@ -86,8 +88,12 @@ def update(frame):
     positions = positions1 + positions2
     carriles = carril1 + carril2
     colors = colors1 + colors2
-    dots.set_offsets(np.column_stack((positions, carriles)))
-    dots.set_facecolor(colors)
+    #dots.set_data(positions, carriles)
+    #dots.set_ydata(carriles)
+    #dots.set_offsets(np.column_stack((positions, carriles)))
+    #dots.set_facecolor(colors)
+    dots.remove()
+    dots = ax.scatter(positions, carriles, marker='o', s=40, c=colors)
 
     contador += 1
     if contador >= t_max:

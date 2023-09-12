@@ -185,3 +185,6 @@ class Auto:
                 return True, nuevo_atras
             else:
                 return False, False
+    
+    def radar_approaching(self):
+        pass

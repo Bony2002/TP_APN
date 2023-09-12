@@ -18,7 +18,7 @@ sdc_cars = 0
 ####################################################################################
 
 def crear_autopista_y_simular(p,t_max):
-    t_inc=1800 
+    t_inc=2 
     cooldown1=2
     cooldown2=2
     iden=0
@@ -147,8 +147,8 @@ def crear_autopista_y_simular(p,t_max):
 
         Gral_Paz_1.analisis()
         Gral_Paz_2.analisis()
-        positions1,carril1 = Gral_Paz_1.actualizacion()
-        positions2,carril2 = Gral_Paz_2.actualizacion()
+        positions1,carril1,colores1 = Gral_Paz_1.actualizacion()
+        positions2,carril2,colores2 = Gral_Paz_2.actualizacion()
     # print(np.array(tiempos_terminacion).mean())
     # plt.hist(tiempos_terminacion)
     # plt.show()

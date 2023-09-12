@@ -23,6 +23,7 @@ class SDC:
                         # al primer auto quien no tiene autos adelante
         self.choque = 0   # Esta chocado si/no
         self.cooldownchoque=1 # Timer para retirar el choque
+        self.cooldownLC = 0
 
         self.probadistraccion = 0
         self.desiredvel = 22
@@ -104,6 +105,10 @@ class SDC:
             self.gap = self.adelante.pos - self.pos - 4
 
     def lane_change(self):
+        if self.cooldownLC > 0:
+            self.cooldownLC -= 1
+            return False, False
+
         if(self.adelante == None or self.atras == None):
             return False, False
     
@@ -140,11 +145,15 @@ class SDC:
             atras_after =  max(-self.atras.max_dacl,min(self.atras.max_acl,self.atras.max_acl*(1-(self.atras.vel/self.atras.desiredvel)**gamma - (atras_desiredst/(atras_gap))**2)))
     
             if self_after - self_now > p*(atras_now + newatras_now - atras_after - newatras_after) + a_thr :
+                self.cooldownLC = 3
+                self.color="g"
                 return True, nuevo_atras
             else:
                 return False, False   
         else:
             if self_after - self_now > p*(newatras_now - newatras_after) + a_thr :
+                self.cooldownLC = 3
+                self.color="g"
                 return True, nuevo_atras
             else:
                 return False, False

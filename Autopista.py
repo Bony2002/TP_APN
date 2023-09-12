@@ -1,4 +1,5 @@
 import Auto
+import SDC
 import numpy as np
 class Autopista:
     def __init__(self,max_velocity,longitud,hora,carril):
@@ -6,7 +7,7 @@ class Autopista:
         self.ultimo = None
         self.hora = hora # Hora del día en la que se está simulando
         self.max_velocity_t1 = max_velocity # Velocidad máxima permitida en la autopista (m/s)
-        self.max_velocity_t2 = max_velocity + 4.7778 # Velocidad máxima permitida en la autopista (m/s) 
+        self.max_velocity_t2 = max_velocity + 4.7778 # Velocidad máxima permitida en el segundo tramo de la autopista (m/s) 
         self.longitud = longitud # Longitud de la autopista (metros)
         self.carril = carril
         self.cant_autos=0
