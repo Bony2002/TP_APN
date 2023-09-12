@@ -7,16 +7,20 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
 
-    # VARIABLES DE SDC
-intro_SDC = False
-p_SDC = 0.9
-tiempos_terminacion_SDC = []
-datos_choques_SDC = []
-sdc_cars = 0
+
+
 ####################################################################################
 
-def crear_autopista_y_simular(p,t_max):
-    t_inc=2 
+def crear_autopista_y_simular(p,t_max,sdc,p_sdc,data):
+
+        # VARIABLES DE SDC
+    intro_SDC = sdc
+    p_SDC = p_sdc
+    tiempos_terminacion_SDC = []
+    datos_choques_SDC = []
+    sdc_cars = 0
+
+    t_inc=2300
     cooldown1=2
     cooldown2=2
     iden=0
@@ -151,32 +155,53 @@ def crear_autopista_y_simular(p,t_max):
     # plt.hist(tiempos_terminacion)
     # plt.show()
     # print(len(datos_choques))
-    # print(len(datos_choques)/cars)
-    # if intro_SDC:
-    #     print(np.array(tiempos_terminacion_SDC).mean())
-    #     print(len(datos_choques_SDC))
-    #     print(len(datos_choques_SDC)/sdc_cars) 
-    return tiempos_terminacion,datos_choques
+    # print(len(datos_choques)/cars)    
+    data["total_tiempos"].append(tiempos_terminacion)
+    data["datos_choques"].append(datos_choques)
+    data["total_tiempos_sdc"].append(tiempos_terminacion_SDC)
+    data["total_choques_sdc"].append(datos_choques_SDC)
+    return
 
 ###########################################################
 
     # VARIABLES GLOBALES
 #Probabilidades a probar 0.2 - 0.4 - 0.5 (Más de 0.5 la cantidad de choques es excesiva)
 
-p_entrar=[0.1,0.3,0.5,0.7]
-t_max=7200*2 # 1 hr : 7200
-total_tiempos=[]
-total_choques=[]
-for i in p_entrar:
-    tiempos,choques=crear_autopista_y_simular(i,t_max)
-    total_tiempos.append(tiempos)
-    total_choques.append(choques)
- 
+data = {
+    "seed": [],
+    "horas": [],
+    "prob_entrar": [],
+    "total_tiempos": [],
+    "datos_choques": [],
+    "sdc": [],
+    "prop_sdc":[],
+    "total_tiempos_sdc": [],
+    "total_choques_sdc": []
+}
 
-dfC=pd.DataFrame(total_choques)
-dfT=pd.DataFrame(total_tiempos)
-fileT="/TP_APN/graficos/tiempos3.csv"
-fileC="/TP_APN/graficos/choques3.csv"
-dfT.to_csv(fileT,index=False)
-dfC.to_csv(fileC,index=False)
-########################################################### INICIACION DE LA AUTOPISTA 
+
+seeds = [44262256,44362396,44755006]
+horas = [2,4,5,6]
+p_entrar=[0.3,0.5,0.7]
+sdc = [False,True]
+p_sdc = [0.3,0.5,0.9]
+
+for seed in seeds:
+    for hr in horas:
+        for p in p_entrar:
+            for hay_sdc in sdc:
+                for p_s in p_sdc:
+                    np.random.seed(seed)
+                    t_max=7200*horas
+                    data["seed"].append(seed)
+                    data["horas"].append(hr)
+                    data["prob_entrar"].append(p)
+                    data["sdc"].append(hay_sdc)
+                    data["prop_sdc"].append(p_s)
+                    crear_autopista_y_simular(p,t_max,hay_sdc,p_s,data)
+
+
+df = pd.DataFrame(data)
+
+file_name="data.csv"
+df.to_csv(file_name, index=False)

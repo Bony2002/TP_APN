@@ -25,11 +25,11 @@ class Auto:
         self.cooldownLC = 0
 
 
-        self.irresponsabilidad = np.random.normal(1,0.15) # Calculamos el % de irresponsabilidad
-        if (self.irresponsabilidad<0.925):
-            self.irresponsabilidad=0.925
-        if (self.irresponsabilidad>1.075):
-            self.irresponsabilidad=1.075
+        self.irresponsabilidad = np.random.normal(1,0.1) # Calculamos el % de irresponsabilidad
+        if (self.irresponsabilidad<0.625):
+            self.irresponsabilidad=0.625
+        if (self.irresponsabilidad>1.875):
+            self.irresponsabilidad=1.875
 
         self.desiredvel = self.carril.max_velocity_t1*self.irresponsabilidad # La velocidad máxima a la que desea ir una persona
 
@@ -38,14 +38,14 @@ class Auto:
 
         # PERSONALIDADES DE LOS CONDUCTORES
             # CONSERVADOR
-        if self.irresponsabilidad < 0.975:
+        if self.irresponsabilidad < 0.8:
             self.time_hdw = 5.5 # Multiplicador del time headway que permite calcular el time_hdw dependiendo de la velocidad del auto
             self.mindst = 7 # La mínima distancia medida en metros que deben tener dos vehículos entre si
             self.human_error = 0.05
             self.personalidad = "Conservador"
 
             # AGRESIVO
-        elif self.irresponsabilidad > 1.025:
+        elif self.irresponsabilidad > 1.2:
             self.time_hdw = 4.5
             self.mindst = 5
             self.human_error = 0.2
