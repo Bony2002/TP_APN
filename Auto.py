@@ -11,6 +11,7 @@ class Auto:
         self.atras = None # Vehiculo que se ecuentra detras de self
         self.max_acl = 3  # Máxima aceleración física posible para un auto
         self.max_dacl = 4   # La máxima desaceleración física posible para un auto
+        self.color="b"
 
         self.dt = 0.5 # Delta Time : Lapso de tiempo que se está teniendo en cuenta durante la simulación
         self.pos = position # Posición del auto en la autopista (metros)
@@ -25,27 +26,26 @@ class Auto:
 
 
         self.irresponsabilidad = np.random.normal(1,0.15) # Calculamos el % de irresponsabilidad
-        if (self.irresponsabilidad<0.625):
-            self.irresponsabilidad=0.625
-        if (self.irresponsabilidad>1.875):
-            self.irresponsabilidad=1.875
+        if (self.irresponsabilidad<0.925):
+            self.irresponsabilidad=0.925
+        if (self.irresponsabilidad>1.075):
+            self.irresponsabilidad=1.075
 
         self.desiredvel = self.carril.max_velocity_t1*self.irresponsabilidad # La velocidad máxima a la que desea ir una persona
 
-        self.probadistraccion = max(0, np.random.normal(0.3,0.01))
 
         self.time_hdw = 5 # Time Headway: El gap de tiempo entre que el frente de un vehículo pase por un punto y el frente del vehículo que lo sigue pase por el mismo punto
 
         # PERSONALIDADES DE LOS CONDUCTORES
             # CONSERVADOR
-        if self.irresponsabilidad < 0.8:
+        if self.irresponsabilidad < 0.975:
             self.time_hdw = 5.5 # Multiplicador del time headway que permite calcular el time_hdw dependiendo de la velocidad del auto
             self.mindst = 7 # La mínima distancia medida en metros que deben tener dos vehículos entre si
             self.human_error = 0.05
             self.personalidad = "Conservador"
 
             # AGRESIVO
-        elif self.irresponsabilidad > 1.2:
+        elif self.irresponsabilidad > 1.025:
             self.time_hdw = 4.5
             self.mindst = 5
             self.human_error = 0.2
@@ -96,6 +96,7 @@ class Auto:
 
 
     def decision(self):
+        self.probadistraccion =np.random.normal(0.15,0.01)
         # Se recalcula la desired velocity porque en Gral. Paz hay un segundo tramos en donde la velocidad máxima es de 100 km/h
         if self.tramo == 0 and self.pos > 21000:
             self.tramo = 1
@@ -111,7 +112,7 @@ class Auto:
             aux_carril = self.otro_carril
             self.otro_carril = self.carril
             self.carril = aux_carril
-            print("cambio carril", self.id)
+            #print("cambio carril", self.id)
         error = np.random.uniform(0,self.human_error)
         gamma=4
         if self.adelante != None:
@@ -172,11 +173,14 @@ class Auto:
             atras_after =  max(-self.atras.max_dacl,min(self.atras.max_acl,self.atras.max_acl*(1-(self.atras.vel/self.atras.desiredvel)**gamma - (atras_desiredst/(atras_gap))**2)))
 
             if self_after - self_now > p*(atras_now + newatras_now - atras_after - newatras_after) + a_thr :
+                self.cooldownLC = 3
+                self.color="r"
                 return True, nuevo_atras
             else:
                 return False, False
         else:
             if self_after - self_now > p*(newatras_now - newatras_after) + a_thr :
+                self.color="r"
                 self.cooldownLC = 3
                 return True, nuevo_atras
             else:
