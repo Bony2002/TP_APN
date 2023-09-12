@@ -3,7 +3,7 @@ import Autopista
 class SDC:
     def __init__(self,id,tiempo_entrada,position,velocity,acceleration,carril,otro_carril):
         self.id = id # Id del auto
-        self.sdc = False # Identificador de self driving car
+        self.sdc = True # Identificador de self driving car
         self.tiempo_entrada = tiempo_entrada
         self.carril = carril
         self.otro_carril = otro_carril
