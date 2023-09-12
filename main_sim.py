@@ -6,7 +6,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
+import sys
+import signal
 
+# Define a signal handler
+def signal_handler(sig, frame):
+
+    df = pd.DataFrame(data)
+    file_name="data.csv"
+    df.to_csv(file_name, index=False)
+
+    sys.exit(0)
+
+# Attach the signal handler
+signal.signal(signal.SIGINT, signal_handler)
 
 
 ####################################################################################
@@ -164,11 +177,7 @@ def crear_autopista_y_simular(p,t_max,sdc,p_sdc,data):
 
 ###########################################################
 
-    # VARIABLES GLOBALES
-#Probabilidades a probar 0.2 - 0.4 - 0.5 (Más de 0.5 la cantidad de choques es excesiva)
-
 data = {
-    "seed": [],
     "horas": [],
     "prob_entrar": [],
     "total_tiempos": [],
@@ -180,28 +189,36 @@ data = {
 }
 
 
-seeds = [44262256,44362396,44755006]
-horas = [2,4,5,6]
+#seeds = [44262256,44362396,44755006]
+horas = [2,5,7]
 p_entrar=[0.3,0.5,0.7]
 sdc = [False,True]
-p_sdc = [0.3,0.5,0.9]
+p_sdc = [0.3,0.9]
 
-for seed in seeds:
-    for hr in horas:
-        for p in p_entrar:
-            for hay_sdc in sdc:
+for hr in horas:
+    for p in p_entrar:
+        for hay_sdc in sdc:
+            if hay_sdc==True:
                 for p_s in p_sdc:
-                    np.random.seed(seed)
-                    t_max=7200*horas
-                    data["seed"].append(seed)
+                    np.random.seed(256396006)
+                    t_max=7200*hr
+                    crear_autopista_y_simular(p,t_max,hay_sdc,p_s,data)
                     data["horas"].append(hr)
                     data["prob_entrar"].append(p)
                     data["sdc"].append(hay_sdc)
                     data["prop_sdc"].append(p_s)
-                    crear_autopista_y_simular(p,t_max,hay_sdc,p_s,data)
+                    print("La fila:",hr,p,hay_sdc,p_s,"está lista")
+            else:
+                np.random.seed(256396006)
+                t_max=7200*hr
+                crear_autopista_y_simular(p,t_max,hay_sdc,0,data)
+                data["horas"].append(hr)
+                data["prob_entrar"].append(p)
+                data["sdc"].append(hay_sdc)
+                data["prop_sdc"].append(None)
+                print("La fila:",hr,p,hay_sdc,None,"está lista")
 
 
 df = pd.DataFrame(data)
-
 file_name="data.csv"
 df.to_csv(file_name, index=False)
