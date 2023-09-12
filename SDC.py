@@ -12,6 +12,7 @@ class SDC:
         self.max_acl = 3  # Máxima aceleración física posible para un auto
         self.max_dacl = 4   # La máxima desaceleración física posible para un auto
         self.color="y"
+        self.multa = 0
 
         self.dt = 0.5 # Delta Time : Lapso de tiempo que se está teniendo en cuenta durante la simulación
         self.pos = position # Posición del auto en la autopista (metros)
@@ -24,18 +25,10 @@ class SDC:
         self.cooldownchoque = 1 # Timer para retirar el choque
         self.cooldownLC = 0
 
-
-        self.irresponsabilidad = 0 # Calculamos el % de irresponsabilidad
-        if (self.irresponsabilidad<0.925):
-            self.irresponsabilidad=0.925
-        if (self.irresponsabilidad>1.075):
-            self.irresponsabilidad=1.075
-
-        self.desiredvel = self.carril.max_velocity_t1*self.irresponsabilidad # La velocidad máxima a la que desea ir una persona
+        self.desiredvel = self.carril.max_velocity_t1 # La velocidad máxima a la que desea ir una persona
 
         self.time_hdw = 5.5 # Multiplicador del time headway que permite calcular el time_hdw dependiendo de la velocidad del auto
         self.mindst = 7 # La mínima distancia medida en metros que deben tener dos vehículos entre si
-        self.human_error = 0
         self.personalidad = "SDC"
 
         # Valores de la velocidad, aceleración y posición que se calcula para alcanzar en el siguiente momento
@@ -76,11 +69,10 @@ class SDC:
 
 
     def decision(self):
-        self.probadistraccion =np.random.normal(0.15,0.01)
         # Se recalcula la desired velocity porque en Gral. Paz hay un segundo tramos en donde la velocidad máxima es de 100 km/h
         if self.tramo == 0 and self.pos > 21000:
             self.tramo = 1
-            self.desiredvel = self.carril.max_velocity_t2*self.irresponsabilidad # La velocidad máxima a la que desea ir una persona
+            self.desiredvel = self.carril.max_velocity_t2 # La velocidad máxima a la que desea ir una persona
         lanechange, nuevo_atras = self.lane_change()
         if lanechange:
             self.carril.eliminar(self.id)
@@ -92,17 +84,13 @@ class SDC:
             aux_carril = self.otro_carril
             self.otro_carril = self.carril
             self.carril = aux_carril
-            #print("cambio carril", self.id)
-        error = np.random.uniform(0,self.human_error)
+ 
         gamma=4
         if self.adelante != None:
             self.desiredst = self.mindst + max(0, (self.vel*self.time_hdw + (self.vel-self.adelante.vel)/2*(self.max_acl*self.max_dacl)**0.5))
         if self.choque != 1:
             self.nextpos = self.pos + self.vel*self.dt +1/2*self.acl*self.dt**2
             self.nextvel = max(0, self.vel + (self.acl)*self.dt)
-        if self.probadistraccion <  np.random.uniform(0,1):
-            self.nextacl = max(-self.max_dacl,min(self.max_acl,self.max_acl*(1-(self.vel/self.desiredvel)**gamma - (self.desiredst/(self.gap))**2 )))
-
 
     def update(self):
         self.pos = self.nextpos
@@ -110,6 +98,8 @@ class SDC:
         self.vel = self.nextvel
         if self.adelante != None:
             self.gap = self.adelante.pos - self.pos - 4
+        self.radar_approaching()
+        self.radar_just_passed()
 
     #TODO EL CONTENIDO DE ESTA FUNCION REFIERE AL MODELO MOBIL, VER SLIDES
     def lane_change(self): 
@@ -141,7 +131,7 @@ class SDC:
         newatras_desiredst = nuevo_atras.mindst + max(0, (nuevo_atras.vel*nuevo_atras.time_hdw + (nuevo_atras.vel-nuevo_atras.adelante.vel)/2*(nuevo_atras.max_acl*nuevo_atras.max_dacl)**0.5))
         newatras_now = max(-nuevo_atras.max_dacl,min(nuevo_atras.max_acl,nuevo_atras.max_acl*(1-(nuevo_atras.vel/nuevo_atras.desiredvel)**gamma - (newatras_desiredst/(newatras_gap))**2)))
 
-        p = 1 - self.irresponsabilidad + 0.7
+        p = 1
         a_thr = 0.2
         if self.carril.carril == 2:
             atras_gap = self.pos - self.atras.pos - 4
@@ -167,4 +157,24 @@ class SDC:
                 return False, False
     
     def radar_approaching(self):
-        pass
+        if (1700 <= self.pos < 1800) or (14150 <= self.pos < 14200) or (19950 <= self.pos < 20000):
+            if self.vel > self.carril.max_velocity_t1:
+                self.desiredvel = self.carril.max_velocity_t1
+        elif self.pos<21000:
+            self.desiredvel = self.carril.max_velocity_t1
+        else:
+            self.desiredvel = self.carril.max_velocity_t2
+
+    def radar_just_passed(self):
+        aux_multa = 0
+        if (1800 <= self.pos < 1820) or (14200 <= self.pos < 14220) or (20000 <= self.pos < 20020):
+            if self.vel > self.carril.max_velocity_t1 :
+                if self.vel < self.carril.max_velocity_t1 - 40:
+                    aux_multa = 150*102.92
+                elif (self.vel > self.carril.max_velocity_t1 - 40) and (self.vel < 38.8889) :
+                    aux_multa = 250*102.92
+                else :
+                    aux_multa = 400*102.92
+                self.multa += aux_multa
+                self.carril.cant_multados += 1
+                self.carril.recaudacion += aux_multa

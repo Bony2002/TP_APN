@@ -34,29 +34,23 @@ class Auto:
 
         self.desiredvel = self.carril.max_velocity_t1*self.irresponsabilidad # La velocidad máxima a la que desea ir una persona
 
-
-        self.time_hdw = 5 # Time Headway: El gap de tiempo entre que el frente de un vehículo pase por un punto y el frente del vehículo que lo sigue pase por el mismo punto
-
         # PERSONALIDADES DE LOS CONDUCTORES
             # CONSERVADOR
         if self.irresponsabilidad < 0.8:
-            self.time_hdw = 5.5 # Multiplicador del time headway que permite calcular el time_hdw dependiendo de la velocidad del auto
+            self.time_hdw = 5.5 # Time Headway: El gap de tiempo entre que el frente de un vehículo pase por un punto y el frente del vehículo que lo sigue pase por el mismo punto
             self.mindst = 7 # La mínima distancia medida en metros que deben tener dos vehículos entre si
-            self.human_error = 0.05
             self.personalidad = "Conservador"
 
             # AGRESIVO
         elif self.irresponsabilidad > 1.2:
             self.time_hdw = 4.5
             self.mindst = 5
-            self.human_error = 0.2
             self.personalidad = "Agresivo"
 
             # PROMEDIO
         else:
             self.time_hdw = 5
             self.mindst = 6
-            self.human_error = 0.1
             self.personalidad = "Promedio"
 
         # Valores de la velocidad, aceleración y posición que se calcula para alcanzar en el siguiente momento
@@ -114,7 +108,6 @@ class Auto:
             self.otro_carril = self.carril
             self.carril = aux_carril
             #print("cambio carril", self.id)
-        error = np.random.uniform(0,self.human_error)
         gamma=4
         if self.adelante != None:
             self.desiredst = self.mindst + max(0, (self.vel*self.time_hdw + (self.vel-self.adelante.vel)/2*(self.max_acl*self.max_dacl)**0.5))
@@ -190,10 +183,11 @@ class Auto:
                 return False, False
     
     def radar_approaching(self):
-        distraccion =np.random.normal(0.8,0.05)
+        respeto = np.random.normal(0.8,0.05)
         if (1700 <= self.pos < 1800) or (14150 <= self.pos < 14200) or (19950 <= self.pos < 20000):
-            if distraccion < np.random.uniform(0,1):
-                self.desiredvel = self.carril.max_velocity_t1
+            if respeto < np.random.uniform(0,1):
+                if self.vel > self.carril.max_velocity_t1:
+                    self.desiredvel = self.carril.max_velocity_t1
         elif self.pos<21000:
             self.desiredvel = self.carril.max_velocity_t1*self.irresponsabilidad
         else:
