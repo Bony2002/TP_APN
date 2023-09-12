@@ -169,6 +169,9 @@ def crear_autopista_y_simular(p,t_max,sdc,p_sdc,data):
     # plt.show()
     # print(len(datos_choques))
     # print(len(datos_choques)/cars)    
+    data["cantidad_de_autos"].append(Gral_Paz_1.cant_autos + Gral_Paz_2.cant_autos)
+    data["cantidad_de_autos_multados"].append(Gral_Paz_1.cant_multados + Gral_Paz_2.cant_multados)
+    data["recaudacion"].append(Gral_Paz_1.recaudacion + Gral_Paz_2.recaudacion)
     data["total_tiempos"].append(tiempos_terminacion)
     data["datos_choques"].append(datos_choques)
     data["total_tiempos_sdc"].append(tiempos_terminacion_SDC)
@@ -179,6 +182,9 @@ def crear_autopista_y_simular(p,t_max,sdc,p_sdc,data):
 
 data = {
     "horas": [],
+    "cantidad_de_autos":[],
+    "cantidad_de_autos_multados":[],
+    "recaudacion":[],
     "prob_entrar": [],
     "total_tiempos": [],
     "datos_choques": [],
@@ -191,9 +197,9 @@ data = {
 
 #seeds = [44262256,44362396,44755006]
 horas = [2,5,7]
-p_entrar=[0.3,0.5,0.7]
+p_entrar=[0.2,0.4,0.6]
 sdc = [False,True]
-p_sdc = [0.3,0.9]
+p_sdc = [0.3,0.8]
 
 for hr in horas:
     for p in p_entrar:

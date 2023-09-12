@@ -11,7 +11,8 @@ class Auto:
         self.atras = None # Vehiculo que se ecuentra detras de self
         self.max_acl = 3  # Máxima aceleración física posible para un auto
         self.max_dacl = 4   # La máxima desaceleración física posible para un auto
-        self.color="b"
+        self.color = "b"
+        self.multa = 0
 
         self.dt = 0.5 # Delta Time : Lapso de tiempo que se está teniendo en cuenta durante la simulación
         self.pos = position # Posición del auto en la autopista (metros)
@@ -130,6 +131,8 @@ class Auto:
         self.vel = self.nextvel
         if self.adelante != None:
             self.gap = self.adelante.pos - self.pos - 4
+        self.radar_approaching()
+        self.radar_just_passed()
 
     #TODO EL CONTENIDO DE ESTA FUNCION REFIERE AL MODELO MOBIL, VER SLIDES
     def lane_change(self): 
@@ -187,4 +190,25 @@ class Auto:
                 return False, False
     
     def radar_approaching(self):
-        pass
+        distraccion =np.random.normal(0.8,0.05)
+        if (1700 <= self.pos < 1800) or (14150 <= self.pos < 14200) or (19950 <= self.pos < 20000):
+            if distraccion < np.random.uniform(0,1):
+                self.desiredvel = self.carril.max_velocity_t1
+        elif self.pos<21000:
+            self.desiredvel = self.carril.max_velocity_t1*self.irresponsabilidad
+        else:
+            self.desiredvel = self.carril.max_velocity_t2*self.irresponsabilidad
+
+    def radar_just_passed(self):
+        aux_multa = 0
+        if (1800 <= self.pos < 1820) or (14200 <= self.pos < 14220) or (20000 <= self.pos < 20020):
+            if self.vel > self.carril.max_velocity_t1 :
+                if self.vel < self.carril.max_velocity_t1 - 40:
+                    aux_multa = 150*102.92
+                elif (self.vel > self.carril.max_velocity_t1 - 40) and (self.vel < 38.8889) :
+                    aux_multa = 250*102.92
+                else :
+                    aux_multa = 400*102.92
+                self.multa += aux_multa
+                self.carril.cant_multados += 1
+                self.carril.recaudacion += aux_multa

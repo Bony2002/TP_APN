@@ -12,6 +12,8 @@ class Autopista:
         self.carril = carril
         self.cant_autos=0
         self.carril = carril
+        self.cant_multados = 0
+        self.recaudacion = 0
 
     def append(self, Auto):
         nuevo_auto = Auto
@@ -118,6 +120,3 @@ class Autopista:
             return actual.atras,actual
         else:
             return False, False
-        
-    def radars(self):
-        pass
