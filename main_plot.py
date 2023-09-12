@@ -8,12 +8,12 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
     # VARIABLES DE SDC
-intro_SDC = False
-p_SDC = 0.2
+intro_SDC = True
+p_SDC = 0.3
 
     # VARIABLES GLOBALES
-p_entrar=0.5
-t_max=12000
+p_entrar=0.3
+t_max=7200*3
 cooldown1=2
 cooldown2=2
 iden=0
@@ -28,7 +28,7 @@ fig, ax = plt.subplots(figsize=(10, 4))
 
 def initplot():
     global dots
-    ax.set_xlim(0, 4000)
+    ax.set_xlim(0, 3000)
     ax.set_ylim(0.5, 2.5)
     #dots.set_data([], [])
     dots = ax.scatter([], [], c='b', marker='o', s=20)

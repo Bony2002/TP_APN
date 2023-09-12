@@ -13,6 +13,7 @@ class Autopista:
         self.cant_autos=0
         self.carril = carril
         self.cant_multados = 0
+        self.sdc_multados = 0
         self.recaudacion = 0
 
     def append(self, Auto):

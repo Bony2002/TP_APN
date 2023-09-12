@@ -91,6 +91,8 @@ class SDC:
         if self.choque != 1:
             self.nextpos = self.pos + self.vel*self.dt +1/2*self.acl*self.dt**2
             self.nextvel = max(0, self.vel + (self.acl)*self.dt)
+        self.nextacl = max(-self.max_dacl,min(self.max_acl,self.max_acl*(1-(self.vel/self.desiredvel)**gamma - (self.desiredst/(self.gap))**2 )))
+
 
     def update(self):
         self.pos = self.nextpos
@@ -176,5 +178,5 @@ class SDC:
                 else :
                     aux_multa = 400*102.92
                 self.multa += aux_multa
-                self.carril.cant_multados += 1
+                self.carril.sdc_multados += 1
                 self.carril.recaudacion += aux_multa
