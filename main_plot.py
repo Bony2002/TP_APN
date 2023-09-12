@@ -9,7 +9,7 @@ from matplotlib.animation import FuncAnimation
 
     # VARIABLES DE SDC
 intro_SDC = False
-p_SDC = 0.5
+p_SDC = 0.2
 
     # VARIABLES GLOBALES
 p_entrar=np.random.normal(0.2,0.1)
@@ -24,13 +24,15 @@ contador=0
 
     # INICIALIZACION DEL PLOT
 fig, ax = plt.subplots(figsize=(10, 4))
-dots, = ax.plot([], [], 'bo')
 
 def initplot():
     ax.set_xlim(0, 2000)
     ax.set_ylim(0.5, 2.5)
-    dots.set_data([], [])
+
+    dots = ax.scatter([], [], c='b', marker='o', s=20)
     return dots,
+
+dots = ax.scatter([], [], c='b', marker='o', s=20) 
 
     # MAIN
 def update(frame):
@@ -76,17 +78,17 @@ def update(frame):
     cooldown1+=1
     cooldown2+=2
 
-
     Gral_Paz_1.analisis()
     Gral_Paz_2.analisis()
-    positions1,carril1 = Gral_Paz_1.actualizacion()
-    positions2,carril2 = Gral_Paz_2.actualizacion()
-
+    positions1,carril1,colors1 = Gral_Paz_1.actualizacion()
+    positions2,carril2,colors2 = Gral_Paz_2.actualizacion()
 
     positions = positions1 + positions2
     carriles = carril1 + carril2
-    dots.set_data(positions, carriles)
-    dots.set_ydata(carriles)
+    colors = colors1 + colors2
+    dots.set_offsets(np.column_stack((positions, carriles)))
+    dots.set_facecolor(colors)
+
     contador += 1
     if contador >= t_max:
         ani.event_source.stop()

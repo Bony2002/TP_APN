@@ -48,15 +48,17 @@ class Autopista:
     def actualizacion(self):
         positions = []
         carriles = []
+        colores = []
         if self.ultimo!=None:
             actual=self.ultimo
             while actual.adelante != None:
                 actual.update()
                 positions.append(actual.pos)
                 carriles.append(actual.carril.carril)
+                colores.append(actual.color)
                 actual=actual.adelante
             actual.update()
-        return positions,carriles
+        return positions,carriles,colores
 
     def revision(self,t):
         tiempo_terminacion = []

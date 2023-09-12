@@ -12,6 +12,7 @@ class SDC:
         self.max_acl = 3  # Máxima aceleración física posible para un auto
         self.max_dacl = 4   # La máxima desaceleración física posible para un auto
         self.personalidad = "Self Driving Car"
+        self.color = 'y'
 
         self.dt = 0.5 # Delta Time : Lapso de tiempo que se está teniendo en cuenta durante la simulación
         self.pos = position # Posición del auto en la autopista (metros)
