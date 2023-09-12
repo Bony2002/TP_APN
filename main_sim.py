@@ -7,8 +7,6 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
 
-np.random.seed(44262256)
-
     # VARIABLES DE SDC
 intro_SDC = False
 p_SDC = 0.9
