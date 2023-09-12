@@ -8,11 +8,11 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
     # VARIABLES DE SDC
-intro_SDC = False
-p_SDC = 0.2
+intro_SDC = True
+p_SDC = 0.5
 
     # VARIABLES GLOBALES
-p_entrar=np.random.normal(0.2,0.1)
+p_entrar=0.5
 t_max=3000
 cooldown1=2
 cooldown2=2
