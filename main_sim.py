@@ -42,7 +42,7 @@ def crear_autopista_y_simular(p,t_max,sdc,p_sdc,data):
     tiempos_terminacion = []
     datos_choques = []
     cars = 0
-        
+    # ESTE ES EL TIEMPO DE INICIACION.
     for t in range(t_inc):
 
         # INTRODUCCIÓN DE AUTOS AL PRIMER CARRIL
@@ -95,7 +95,7 @@ def crear_autopista_y_simular(p,t_max,sdc,p_sdc,data):
     cooldown1=2
     cooldown2=2
     print("termino la iniciacion")
-    ########################################################### INICIACION DE LA AUTOPISTA 
+    ########################################################### FIN INICIACION DE LA AUTOPISTA 
 
     for t in range(t_max):
 
@@ -164,11 +164,6 @@ def crear_autopista_y_simular(p,t_max,sdc,p_sdc,data):
         Gral_Paz_2.analisis()
         positions1,carril1,colores1 = Gral_Paz_1.actualizacion()
         positions2,carril2,colores2 = Gral_Paz_2.actualizacion()
-    # print(np.array(tiempos_terminacion).mean())
-    # plt.hist(tiempos_terminacion)
-    # plt.show()
-    # print(len(datos_choques))
-    # print(len(datos_choques)/cars)    
     data["cantidad_de_autos"].append(Gral_Paz_1.cant_autos + Gral_Paz_2.cant_autos)
     data["cantidad_de_autos_multados"].append(Gral_Paz_1.cant_multados + Gral_Paz_2.cant_multados)
     data["cantidad_de_sdc_multados"].append(Gral_Paz_1.sdc_multados + Gral_Paz_2.sdc_multados)

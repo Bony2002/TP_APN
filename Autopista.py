@@ -2,7 +2,7 @@ import Auto
 import SDC
 import numpy as np
 class Autopista:
-    def __init__(self,max_velocity,longitud,hora,carril):
+    def __init__(self,max_velocity,longitud,hora,carril): # La autopista esta definida como una lista enlazada, donde cada nodo es un auto
         self.primero = None
         self.ultimo = None
         self.hora = hora # Hora del día en la que se está simulando
@@ -16,7 +16,7 @@ class Autopista:
         self.sdc_multados = 0
         self.recaudacion = 0
 
-    def append(self, Auto):
+    def append(self, Auto): # Agrega un auto al final de la autopista
         nuevo_auto = Auto
         self.cant_autos+=1
         if not self.primero:
@@ -29,7 +29,7 @@ class Autopista:
             self.ultimo = nuevo_auto
     
     
-    def analisis(self):
+    def analisis(self): #Hace el analisis en todos los autos.
         if self.ultimo!=None:
             actual=self.ultimo
             while actual.adelante != None:
@@ -37,7 +37,7 @@ class Autopista:
                 actual=actual.adelante 
             actual.decision()
 
-    def eliminar(self,id):
+    def eliminar(self,id): #Elimina al auto segun el id
         fin=False
         actual=self.ultimo
         while actual!=None and fin==False:
@@ -49,7 +49,7 @@ class Autopista:
                     actual.adelante.atras = actual.atras
             actual=actual.adelante
 
-    def actualizacion(self):
+    def actualizacion(self): #Actualiza los estados de los autos
         positions = []
         carriles = []
         colores = []
@@ -64,7 +64,7 @@ class Autopista:
             actual.update()
         return positions,carriles,colores
 
-    def revision(self,t):
+    def revision(self,t): #Realiza la revision en cada uno de los autos y se guarda distintos valores para realziar analisis.
         tiempo_terminacion = []
         tiempo_terminacion_SDC = []
         choques = []
@@ -98,7 +98,7 @@ class Autopista:
                     self.eliminar(actual.id)
         return (tiempo_terminacion,tiempo_terminacion_SDC),(choques,choques_SDC)
 
-    def resumen(self):
+    def resumen(self): #Devuelve un resumen de la situacion actual.
         actual=self.ultimo
         resumen=np.zeros(shape=[self.cant_autos,4])
         i=0
@@ -109,7 +109,7 @@ class Autopista:
         resumen[i]=[actual.id,actual.pos,actual.vel,actual.acl]
         return resumen
     
-    def query(self,posicion):
+    def query(self,posicion): # Segun tu posicion, busca en el carril cual es el auto de adelante y cual el de atras (se usa para el LC)
         actual = self.ultimo
         if actual == None:
             return False, False
