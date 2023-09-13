@@ -13,7 +13,7 @@ import signal
 def signal_handler(sig, frame):
 
     df = pd.DataFrame(data)
-    file_name="data.csv"
+    file_name="data_sdc.csv"
     df.to_csv(file_name, index=False)
 
     sys.exit(0)
@@ -171,6 +171,7 @@ def crear_autopista_y_simular(p,t_max,sdc,p_sdc,data):
     # print(len(datos_choques)/cars)    
     data["cantidad_de_autos"].append(Gral_Paz_1.cant_autos + Gral_Paz_2.cant_autos)
     data["cantidad_de_autos_multados"].append(Gral_Paz_1.cant_multados + Gral_Paz_2.cant_multados)
+    data["cantidad_de_sdc_multados"].append(Gral_Paz_1.sdc_multados + Gral_Paz_2.sdc_multados)
     data["recaudacion"].append(Gral_Paz_1.recaudacion + Gral_Paz_2.recaudacion)
     data["total_tiempos"].append(tiempos_terminacion)
     data["datos_choques"].append(datos_choques)
@@ -184,6 +185,7 @@ data = {
     "horas": [],
     "cantidad_de_autos":[],
     "cantidad_de_autos_multados":[],
+    "cantidad_de_sdc_multados":[],
     "recaudacion":[],
     "prob_entrar": [],
     "total_tiempos": [],
@@ -195,11 +197,11 @@ data = {
 }
 
 
-seeds = [44262256,44362396,44755006,44232678,44598525,]
+seeds = [44262256,44362396,44755006,44232678,441242423,12332118,645662,352626]
 horas = [3]
-p_entrar=[0.4]
+p_entrar=[0.1,0.2,0.3,0.4,0.5,0.6]
 sdc = [True]
-p_sdc = [0,0.3,0.8]
+p_sdc = [0.5]
 
 for seed in seeds:
     for p in p_entrar:
@@ -212,9 +214,9 @@ for seed in seeds:
                 data["prob_entrar"].append(p)
                 data["sdc"].append(hay_sdc)
                 data["prop_sdc"].append(p_s)
-                print("La fila:",p,hay_sdc,p_s,"está lista")
+                print("La fila:",seed,p_s,"está lista")
 
 
 df = pd.DataFrame(data)
-file_name="data_pl2.csv"
+file_name="data_sdc.csv"
 df.to_csv(file_name, index=False)

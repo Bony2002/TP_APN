@@ -1,32 +1,52 @@
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
 
-df = pd.read_csv("data.csv")
-
+# Load the data
+df = pd.read_csv("data_tiempo.csv")
 df_sin_sdc = df[df['sdc'] == False]
 
-df_filtro_2 = df_sin_sdc[df_sin_sdc['horas'] == 2]
+# Initialize arrays
+total_tiempos_02 = np.array([])
+total_tiempos_04 = np.array([])
+total_tiempos_06 = np.array([])
 
-mean_2hr_02den = np.array(eval(df_filtro_2["total_tiempos"][0])).mean() # Mean value en 2 horas con density 0.2
+# Extract and concatenate data
+for i in range(df_sin_sdc.shape[0]):
+    prob_entrar = df_sin_sdc.iloc[i]['prob_entrar']
+    total_tiempos = np.array(eval(df_sin_sdc.iloc[i]['total_tiempos']))
+    
+    if prob_entrar == 0.2:
+        total_tiempos_02 = np.concatenate((total_tiempos_02, total_tiempos))
+    elif prob_entrar == 0.4:
+        total_tiempos_04 = np.concatenate((total_tiempos_04, total_tiempos))
+    elif prob_entrar == 0.6:
+        total_tiempos_06 = np.concatenate((total_tiempos_06, total_tiempos))
 
-mean_2hr_04den = np.array(eval(df_filtro_2["total_tiempos"][3])).mean() # Mean value en 2 horas con density 0.4
+# Create histograms
+plt.figure(figsize=(15, 5))
 
-mean_2hr_06den = np.array(eval(df_filtro_2["total_tiempos"][6])).mean() # Mean value en 2 horas con density 0.6
+# Create subplots with shared y-axis
+plt.subplot(1, 3, 1)
+plt.hist(total_tiempos_02, bins=10, edgecolor='k', alpha=0.7)
+plt.xlabel('Total Tiempos')
+plt.ylabel('Frequency')
+plt.title('Probability of Entering: 0.2')
+plt.ylim([0, 8000])  # Set y-axis limit
 
-df_filtro_5 = df_sin_sdc[df_sin_sdc['horas'] == 5]
+plt.subplot(1, 3, 2, sharey=plt.gca())
+plt.hist(total_tiempos_04, bins=10, edgecolor='k', alpha=0.7)
+plt.xlabel('Total Tiempos')
+plt.title('Probability of Entering: 0.4')
+plt.ylim([0, 8000])  # Set y-axis limit
 
-mean_5hr_02den = np.array(eval(df_filtro_5["total_tiempos"][9])).mean() # Mean value en 5 horas con density 0.2
+plt.subplot(1, 3, 3, sharey=plt.gca())
+plt.hist(total_tiempos_06, bins=10, edgecolor='k', alpha=0.7)
+plt.xlabel('Total Tiempos')
+plt.title('Probability of Entering: 0.6')
+plt.ylim([0, 8000])  # Set y-axis limit
 
-mean_5hr_04den = np.array(eval(df_filtro_5["total_tiempos"][12])).mean() # Mean value en 5 horas con density 0.4
+plt.savefig('total_tiempos.png', dpi=300, bbox_inches='tight')
 
-mean_5hr_06den = np.array(eval(df_filtro_5["total_tiempos"][15])).mean() # Mean value en 5 horas con density 0.6
-
-df_filtro_7 = df_sin_sdc[df_sin_sdc['horas'] == 7]
-
-mean_7hr_02den = np.array(eval(df_filtro_7["total_tiempos"][18])).mean() # Mean value en 7 horas con density 0.2
-
-mean_7hr_04den = np.array(eval(df_filtro_7["total_tiempos"][21])).mean() # Mean value en 7 horas con density 0.4
-
-mean_7hr_06den = np.array(eval(df_filtro_7["total_tiempos"][24])).mean() # Mean value en 7 horas con density 0.6
-
+plt.tight_layout()
+plt.show()
